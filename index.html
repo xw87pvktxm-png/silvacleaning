@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Silva Cleaning Team — Professional Cleaning Services</title>
+<meta name="description" content="Professional residential, commercial, window, and deep cleaning services. Trusted, thorough, and reliable. Get a free quote today — 087 199 5233."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0D2B6E;
+  --blue:#1A52B8;
+  --blue-mid:#1448A0;
+  --blue-light:#D6E4FF;
+  --blue-pale:#EEF3FF;
+  --text:#0D1B3E;
+  --muted:#4A5568;
+  --bg:#F7F9FF;
+  --white:#fff;
+  --border:rgba(26,82,184,0.13);
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 4px 24px rgba(13,43,110,0.08);
+  --shadow-md:0 8px 40px rgba(13,43,110,0.13);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:16px;overflow-x:hidden;}
+
+/* ── REVEAL ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(28px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+.delay-1{transition-delay:0.1s;}
+.delay-2{transition-delay:0.2s;}
+.delay-3{transition-delay:0.3s;}
+.delay-4{transition-delay:0.4s;}
+.delay-5{transition-delay:0.5s;}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.875rem 1.5rem;
+  transition:box-shadow 0.3s;
+}
+nav.scrolled{box-shadow:var(--shadow);}
+.logo{display:flex;flex-direction:column;line-height:1.1;text-decoration:none;}
+.logo-top{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:900;font-style:italic;color:var(--navy);}
+.logo-bottom{font-size:0.52rem;font-weight:700;letter-spacing:3.5px;color:var(--blue);text-transform:uppercase;}
+.nav-links{display:flex;gap:1.75rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.875rem;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--navy);}
+.nav-right{display:flex;align-items:center;gap:0.75rem;}
+.nav-phone{font-size:0.8rem;font-weight:700;color:var(--blue);text-decoration:none;display:none;}
+.nav-cta{background:var(--blue);color:white;border:none;cursor:pointer;padding:0.6rem 1.2rem;border-radius:50px;font-size:0.8rem;font-weight:700;font-family:'DM Sans',sans-serif;text-decoration:none;white-space:nowrap;transition:background 0.2s,transform 0.15s;}
+.nav-cta:hover{background:var(--navy);transform:translateY(-1px);}
+/* Hamburger */
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;padding:4px;border:none;background:none;}
+.hamburger span{width:22px;height:2px;background:var(--navy);border-radius:2px;transition:transform 0.3s,opacity 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+/* Mobile menu */
+.mobile-menu{display:none;position:fixed;top:58px;left:0;right:0;background:white;border-bottom:1px solid var(--border);z-index:199;padding:0.5rem 1.5rem 1rem;box-shadow:var(--shadow-md);}
+.mobile-menu.open{display:block;}
+.mobile-menu a{display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:1rem;border-bottom:1px solid var(--border);}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu .mob-cta{margin-top:0.75rem;display:block;text-align:center;background:var(--blue);color:white;padding:0.9rem;border-radius:50px;font-weight:700;}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(145deg,#071840 0%,#0D2B6E 45%,#1A52B8 100%);
+  padding:4rem 1.5rem 3.5rem;
+  position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 75% 40%,rgba(26,82,184,0.35) 0%,transparent 65%);}
+.hero::after{content:'';position:absolute;bottom:-60px;left:-40px;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);border-radius:50%;}
+.sparkle{position:absolute;color:rgba(255,255,255,0.15);animation:float 4s ease-in-out infinite;}
+.s1{top:10%;left:6%;font-size:0.9rem;animation-delay:0s;}
+.s2{top:20%;right:12%;font-size:1.1rem;animation-delay:0.8s;}
+.s3{bottom:30%;left:9%;font-size:0.75rem;animation-delay:1.6s;}
+.s4{top:50%;right:7%;font-size:0.85rem;animation-delay:0.4s;}
+.s5{bottom:14%;right:22%;font-size:1rem;animation-delay:1.2s;}
+.s6{top:38%;left:35%;font-size:0.7rem;animation-delay:2s;}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-8px) rotate(15deg);}}
+.hero-content{max-width:640px;position:relative;}
+.hero-tag{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.1);color:#93B8FF;border:1px solid rgba(255,255,255,0.18);border-radius:50px;padding:0.3rem 0.9rem;font-size:0.68rem;font-weight:700;letter-spacing:1.5px;margin-bottom:1.35rem;text-transform:uppercase;backdrop-filter:blur(8px);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,8vw,3.8rem);font-weight:900;color:white;line-height:1.08;margin-bottom:0.5rem;letter-spacing:-0.5px;}
+.hero h1 em{font-style:italic;color:#7EB3FF;}
+.hero-tagline{font-size:0.72rem;font-weight:700;letter-spacing:3px;color:#93B8FF;text-transform:uppercase;margin-bottom:1.1rem;}
+.hero-desc{font-size:1rem;color:rgba(255,255,255,0.72);margin-bottom:2rem;max-width:480px;line-height:1.7;}
+.hero-btns{display:flex;gap:0.875rem;flex-wrap:wrap;}
+.btn-primary{background:white;color:var(--navy);padding:0.875rem 1.75rem;border-radius:50px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.3);}
+.btn-outline{background:transparent;color:white;padding:0.875rem 1.75rem;border-radius:50px;border:2px solid rgba(255,255,255,0.3);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;transition:border-color 0.2s,background 0.2s;}
+.btn-outline:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);}
+.hero-phone{margin-top:1.35rem;color:rgba(255,255,255,0.55);font-size:0.85rem;}
+.hero-phone a{color:#7EB3FF;font-size:1rem;font-weight:700;text-decoration:none;}
+.hero-stats{display:flex;gap:2rem;margin-top:3rem;border-top:1px solid rgba(255,255,255,0.12);padding-top:2rem;flex-wrap:wrap;}
+.stat-num{font-size:1.6rem;font-weight:700;color:white;font-family:'Playfair Display',serif;line-height:1;}
+.stat-label{font-size:0.68rem;color:rgba(255,255,255,0.45);margin-top:4px;letter-spacing:0.5px;}
+
+/* ── CALL BAR ── */
+.call-bar{background:var(--blue);color:white;text-align:center;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:0.875rem;text-decoration:none;transition:background 0.2s;}
+.call-bar:hover{background:var(--navy);}
+.call-bar span{font-size:0.9rem;font-weight:500;}
+.call-bar strong{font-size:1.05rem;font-weight:700;}
+
+/* ── SHARED SECTION ── */
+section{padding:4.5rem 1.5rem;}
+.container{max-width:1100px;margin:0 auto;}
+.section-label{display:inline-block;color:var(--blue);font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:0.6rem;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,2.5rem);font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:0.65rem;}
+.section-sub{color:var(--muted);font-size:0.92rem;margin-bottom:2.5rem;max-width:560px;}
+
+/* ── SERVICES ── */
+#services{background:var(--bg);}
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.service-card{background:white;border-radius:var(--radius);padding:1.5rem 1.25rem;border:1px solid var(--border);text-align:center;transition:transform 0.25s,box-shadow 0.25s;cursor:default;}
+.service-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.s-icon{width:56px;height:56px;background:var(--blue-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;border:2px solid var(--blue-light);transition:background 0.2s;}
+.service-card:hover .s-icon{background:var(--blue-light);}
+.service-card h3{font-size:0.8rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.5px;}
+.service-card p{font-size:0.8rem;color:var(--muted);line-height:1.5;}
+.service-tag{display:inline-block;margin-top:0.75rem;background:var(--blue-pale);color:var(--blue);border-radius:50px;padding:0.2rem 0.7rem;font-size:0.68rem;font-weight:700;}
+
+/* ── WHY US ── */
+.why-section{background:var(--navy);}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.why-item{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius);padding:1.35rem 1rem;text-align:center;transition:background 0.2s;}
+.why-item:hover{background:rgba(255,255,255,0.1);}
+.w-icon{font-size:1.6rem;margin-bottom:0.65rem;}
+.why-item h4{color:white;font-weight:700;font-size:0.875rem;margin-bottom:0.3rem;}
+.why-item p{color:rgba(255,255,255,0.5);font-size:0.75rem;line-height:1.5;}
+.why-section .section-title{color:white;}
+.why-section .section-sub{color:rgba(255,255,255,0.55);}
+.why-section .section-label{color:#7EB3FF;}
+
+/* ── PRICING ── */
+#pricing{background:white;}
+.pricing-grid{display:grid;grid-template-columns:1fr;gap:1rem;}
+.pricing-card{border-radius:var(--radius);border:1.5px solid var(--border);padding:1.5rem 1.25rem;position:relative;transition:transform 0.25s,box-shadow 0.25s;background:white;}
+.pricing-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.pricing-card.featured{border-color:var(--blue);background:var(--blue-pale);}
+.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--blue);color:white;border-radius:50px;padding:0.25rem 1rem;font-size:0.68rem;font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.pricing-icon{font-size:2rem;margin-bottom:0.75rem;}
+.pricing-card h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;}
+.pricing-from{font-size:0.72rem;color:var(--muted);margin-bottom:0.1rem;text-transform:uppercase;letter-spacing:0.5px;}
+.pricing-price{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--blue);line-height:1.1;margin-bottom:0.875rem;}
+.pricing-price sup{font-size:1rem;vertical-align:top;margin-top:0.4rem;}
+.pricing-list{list-style:none;margin-bottom:1.25rem;}
+.pricing-list li{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.82rem;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid var(--border);}
+.pricing-list li:last-child{border-bottom:none;}
+.pricing-list li::before{content:'✓';color:var(--blue);font-weight:700;flex-shrink:0;}
+.pricing-btn{display:block;text-align:center;background:var(--blue);color:white;border-radius:50px;padding:0.7rem;font-size:0.85rem;font-weight:700;text-decoration:none;transition:background 0.2s;}
+.pricing-btn:hover{background:var(--navy);}
+.pricing-note{text-align:center;font-size:0.78rem;color:var(--muted);margin-top:1.5rem;}
+.pricing-note a{color:var(--blue);text-decoration:none;font-weight:700;}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section{background:var(--bg);}
+.reviews-grid{display:grid;grid-template-columns:1fr;gap:1rem;}
+.review-card{background:white;border-radius:var(--radius);padding:1.5rem;border:1px solid var(--border);box-shadow:var(--shadow);transition:transform 0.25s;}
+.review-card:hover{transform:translateY(-3px);}
+.review-stars{color:#F5A623;font-size:1rem;margin-bottom:0.75rem;letter-spacing:2px;}
+.review-text{font-size:0.9rem;color:var(--text);line-height:1.65;font-style:italic;margin-bottom:1rem;}
+.review-text::before{content:'\201C';}
+.review-text::after{content:'\201D';}
+.reviewer{display:flex;align-items:center;gap:0.75rem;}
+.reviewer-avatar{width:40px;height:40px;border-radius:50%;background:var(--blue-pale);border:2px solid var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--blue);flex-shrink:0;}
+.reviewer-name{font-weight:700;font-size:0.875rem;color:var(--navy);}
+.reviewer-type{font-size:0.72rem;color:var(--muted);}
+.review-source{margin-top:0.4rem;font-size:0.68rem;color:var(--muted);}
+
+/* ── FAQ ── */
+#faq{background:white;}
+.faq-list{max-width:720px;}
+.faq-item{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:0.75rem;overflow:hidden;transition:box-shadow 0.2s;}
+.faq-item.open{box-shadow:var(--shadow);}
+.faq-q{width:100%;text-align:left;background:white;border:none;cursor:pointer;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:700;color:var(--navy);transition:background 0.2s;}
+.faq-q:hover{background:var(--blue-pale);}
+.faq-item.open .faq-q{background:var(--blue-pale);}
+.faq-chevron{font-size:0.75rem;color:var(--blue);transition:transform 0.3s;flex-shrink:0;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.2s;}
+.faq-a-inner{padding:0 1.25rem 1.1rem;font-size:0.875rem;color:var(--muted);line-height:1.65;}
+.faq-item.open .faq-a{max-height:300px;}
+
+/* ── BOOKING ── */
+.booking-section{background:var(--blue-pale);}
+.booking-form{background:white;border-radius:var(--radius);padding:2rem 1.5rem;border:1px solid var(--blue-light);box-shadow:var(--shadow);}
+.form-group{margin-bottom:1.1rem;}
+.form-group label{display:block;font-size:0.72rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;text-transform:uppercase;letter-spacing:0.75px;}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:0.8rem 1rem;border-radius:var(--radius-sm);border:1.5px solid var(--blue-light);
+  background:var(--blue-pale);font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--text);
+  transition:border-color 0.2s,background 0.2s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  outline:none;border-color:var(--blue);background:white;
+}
+.form-group textarea{resize:vertical;min-height:90px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;}
+.submit-btn{
+  width:100%;background:var(--blue);color:white;border:none;cursor:pointer;
+  padding:1rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;
+  font-weight:700;margin-top:0.5rem;transition:background 0.2s,transform 0.15s;
+}
+.submit-btn:hover{background:var(--navy);transform:translateY(-1px);}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.checklist{list-style:none;margin-bottom:2rem;}
+.checklist li{display:flex;align-items:flex-start;gap:0.65rem;margin-bottom:0.7rem;font-size:0.875rem;color:var(--muted);}
+.check-icon{width:20px;height:20px;min-width:20px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:2px;color:white;font-size:0.6rem;font-weight:700;}
+.contact-box{background:white;border-radius:var(--radius-sm);padding:1.1rem 1.25rem;border:1.5px solid var(--blue-light);display:flex;align-items:center;gap:0.875rem;text-decoration:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.contact-box:hover{border-color:var(--blue);box-shadow:var(--shadow);}
+.contact-box .phone-icon{font-size:1.5rem;}
+.contact-box h4{font-weight:700;color:var(--navy);font-size:0.85rem;margin-bottom:2px;}
+.contact-box p{font-size:1rem;font-weight:700;color:var(--blue);}
+.booking-section .section-label{color:var(--blue);}
+.booking-section .section-title{color:var(--navy);}
+/* Form success/error */
+.form-msg{display:none;padding:1rem;border-radius:var(--radius-sm);font-size:0.875rem;font-weight:600;margin-top:0.75rem;}
+.form-msg.success{background:#E6F9EE;color:#1A7C3E;border:1px solid #A8E6BC;display:block;}
+.form-msg.error{background:#FEE2E2;color:#9B1C1C;border:1px solid #FCA5A5;display:block;}
+
+/* ── HIRING ── */
+.hiring-section{background:var(--navy);}
+.hiring-badge{display:inline-block;background:rgba(255,255,255,0.12);color:#93B8FF;border:1px solid rgba(255,255,255,0.2);border-radius:50px;padding:0.3rem 1rem;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;}
+.hiring-section .section-title{color:white;}
+.hiring-section .section-sub{color:rgba(255,255,255,0.55);}
+.perks-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-bottom:2rem;}
+.perk{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:1rem;transition:background 0.2s;}
+.perk:hover{background:rgba(255,255,255,0.11);}
+.p-icon{font-size:1.25rem;margin-bottom:0.35rem;}
+.perk h5{font-size:0.82rem;font-weight:700;color:white;margin-bottom:0.15rem;}
+.perk p{font-size:0.75rem;color:rgba(255,255,255,0.5);}
+.apply-btn{display:inline-block;background:white;color:var(--navy);border-radius:50px;padding:0.9rem 1.75rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;}
+.apply-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.25);}
+.hiring-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius);padding:2.5rem 1.75rem;text-align:center;}
+.hiring-card .big{font-size:3.5rem;margin-bottom:1rem;}
+.hiring-card h4{font-family:'Playfair Display',serif;font-size:1.35rem;color:white;margin-bottom:0.75rem;font-style:italic;}
+.hiring-card p{font-size:0.875rem;color:rgba(255,255,255,0.55);margin-bottom:1rem;line-height:1.65;}
+.hiring-card .detail{font-size:0.9rem;font-weight:700;color:#93B8FF;}
+.hiring-card .detail a{color:#7EB3FF;text-decoration:none;}
+
+/* ── FEEDBACK ── */
+#feedback{background:var(--blue-pale);}
+.feedback-form{background:white;border-radius:var(--radius);padding:2rem 1.5rem;border:1px solid var(--blue-light);box-shadow:var(--shadow);max-width:640px;}
+/* Star rating */
+.star-rating{display:flex;gap:0.35rem;margin-bottom:0.25rem;flex-direction:row-reverse;justify-content:flex-end;}
+.star-rating input{display:none;}
+.star-rating label{font-size:2rem;color:#CBD5E0;cursor:pointer;transition:color 0.15s;line-height:1;}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label{color:#F5A623;}
+.star-label{font-size:0.72rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.75px;margin-bottom:0.4rem;display:block;}
+.star-hint{font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;height:1em;}
+/* File upload */
+.file-upload-area{border:2px dashed var(--blue-light);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--blue-pale);position:relative;}
+.file-upload-area:hover{border-color:var(--blue);background:#E8EFFE;}
+.file-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.file-upload-icon{font-size:1.75rem;margin-bottom:0.4rem;}
+.file-upload-area p{font-size:0.82rem;color:var(--muted);line-height:1.5;}
+.file-upload-area strong{color:var(--blue);}
+.file-preview{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;}
+.file-preview img{width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--blue-light);}
+
+/* ── FOOTER ── */
+footer{background:#071840;color:rgba(255,255,255,0.5);text-align:center;padding:3rem 1.5rem;font-size:0.8rem;}
+.f-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1.6rem;color:white;font-weight:900;margin-bottom:0.2rem;}
+.f-tag{font-size:0.58rem;letter-spacing:4px;text-transform:uppercase;color:#7EB3FF;margin-bottom:1.5rem;}
+.f-links{display:flex;justify-content:center;gap:1.75rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+.f-links a{color:rgba(255,255,255,0.5);text-decoration:none;transition:color 0.2s;}
+.f-links a:hover{color:white;}
+.f-phone{margin-bottom:0.75rem;}
+.f-phone a{color:#7EB3FF;font-weight:700;font-size:1.05rem;text-decoration:none;}
+.f-divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:1.25rem auto;max-width:300px;}
+.f-copy{color:rgba(255,255,255,0.25);font-size:0.72rem;margin-top:0.5rem;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(16px);z-index:999;
+  background:var(--navy);color:white;padding:1rem 1.5rem;border-radius:var(--radius-sm);
+  font-size:0.875rem;font-weight:600;opacity:0;pointer-events:none;
+  transition:opacity 0.3s,transform 0.3s;text-align:center;width:88%;max-width:340px;
+  box-shadow:var(--shadow-md);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── MOBILE STICKY CTA ── */
+.mob-sticky{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--blue);display:flex;
+  padding:0.75rem 1rem;gap:0.5rem;
+  box-shadow:0 -4px 20px rgba(13,43,110,0.2);
+}
+.mob-sticky a{flex:1;text-align:center;padding:0.75rem;border-radius:50px;font-size:0.875rem;font-weight:700;text-decoration:none;}
+.mob-sticky .mob-call{background:white;color:var(--navy);}
+.mob-sticky .mob-book{background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.35);}
+body{padding-bottom:70px;}
+
+/* ── DESKTOP OVERRIDES ── */
+@media(min-width:768px){
+  nav{padding:1rem 2.5rem;}
+  .hamburger{display:none;}
+  .nav-links{display:flex;}
+  .nav-phone{display:block;}
+  .mobile-menu{display:none!important;}
+  .hero{padding:6rem 2.5rem 5rem;min-height:88vh;display:flex;align-items:center;}
+  section{padding:6rem 2.5rem;}
+  .services-grid{grid-template-columns:repeat(3,1fr);}
+  .services-grid .service-card:last-child{grid-column:auto;}
+  .why-grid{grid-template-columns:repeat(5,1fr);}
+  .pricing-grid{grid-template-columns:repeat(3,1fr);}
+  .reviews-grid{grid-template-columns:repeat(3,1fr);}
+  .booking-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+  .hiring-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+  .mob-sticky{display:none;}
+  body{padding-bottom:0;}
+  .toast{left:auto;right:2rem;width:auto;transform:translateY(16px);}
+  .toast.show{transform:translateY(0);}
+}
+@media(min-width:1024px){
+  .services-grid{grid-template-columns:repeat(5,1fr);}
+  .services-grid .service-card:last-child{grid-column:auto;}
+}
+/* hide mobile menu on desktop strictly */
+@media(min-width:768px){.mobile-menu{display:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="mainNav">
+  <a class="logo" href="#top">
+    <span class="logo-top">silva</span>
+    <span class="logo-bottom">Cleaning Team</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#feedback">Reviews</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#hiring">Careers</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="nav-phone" href="tel:0871995233">📞 087 199 5233</a>
+    <a class="nav-cta" href="#booking">Free Quote</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" class="mob-link">Services</a>
+  <a href="#pricing" class="mob-link">Pricing</a>
+  <a href="#why" class="mob-link">Why Us</a>
+  <a href="#feedback" class="mob-link">Reviews</a>
+  <a href="#faq" class="mob-link">FAQ</a>
+  <a href="#hiring" class="mob-link">Careers</a>
+  <a href="#booking" class="mob-cta">Get a Free Quote →</a>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <span class="sparkle s1">✦</span>
+  <span class="sparkle s2">✦</span>
+  <span class="sparkle s3">✦</span>
+  <span class="sparkle s4">✦</span>
+  <span class="sparkle s5">✦</span>
+  <span class="sparkle s6">✦</span>
+  <div class="hero-content">
+    <div class="hero-tag">✦ Because every detail matters</div>
+    <h1><em>Silva</em><br/>Cleaning Team</h1>
+    <div class="hero-tagline">Clean Spaces. Better Living.</div>
+    <p class="hero-desc">More time for <strong style="color:white;">you</strong>, comfort for <strong style="color:white;">your family</strong>. Professional, trusted, and thorough — every single visit.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="#booking">Book Online →</a>
+      <a class="btn-outline" href="tel:0871995233">📞 087 199 5233</a>
+    </div>
+    <div class="hero-phone">Free quote, no obligation — call us anytime</div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Satisfaction Guaranteed</div>
+      </div>
+      <div>
+        <div class="stat-num">5★</div>
+        <div class="stat-label">Trusted Professionals</div>
+      </div>
+      <div>
+        <div class="stat-num">Free</div>
+        <div class="stat-label">No-Obligation Quote</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call Bar -->
+<a class="call-bar" href="tel:0871995233">
+  <span>📞 Call us now for a free quote —</span>
+  <strong>087 199 5233</strong>
+</a>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="container">
+    <span class="section-label reveal">What we offer</span>
+    <h2 class="section-title reveal">Our Cleaning Services</h2>
+    <p class="section-sub reveal">From regular home cleans to post-construction sparkle — we handle it all with care and attention to detail.</p>
+    <div class="services-grid">
+      <div class="service-card reveal delay-1">
+        <div class="s-icon">🏠</div>
+        <h3>Residential Cleaning</h3>
+        <p>Regular or one-off home cleans. We treat every home like our own — thorough, careful, and consistent.</p>
+        <span class="service-tag">Weekly · Fortnightly · One-off</span>
+      </div>
+      <div class="service-card reveal delay-2">
+        <div class="s-icon">🏢</div>
+        <h3>Commercial Cleaning</h3>
+        <p>Offices and workspaces kept spotless and professional. Flexible scheduling around your business hours.</p>
+        <span class="service-tag">Offices · Retail · Hospitality</span>
+      </div>
+      <div class="service-card reveal delay-3">
+        <div class="s-icon">🪟</div>
+        <h3>Window Cleaning</h3>
+        <p>Crystal-clear results inside and out, streak-free every time. Residential and commercial windows.</p>
+        <span class="service-tag">Inside &amp; Out · Streak-Free</span>
+      </div>
+      <div class="service-card reveal delay-4">
+        <div class="s-icon">🏗️</div>
+        <h3>Post-Construction</h3>
+        <p>After the builders leave, we make your new space move-in ready — dust, debris, and all.</p>
+        <span class="service-tag">New Builds · Renovations</span>
+      </div>
+      <div class="service-card reveal delay-5">
+        <div class="s-icon">✨</div>
+        <h3>Deep Clean</h3>
+        <p>A thorough top-to-bottom clean — perfect for move-ins, move-outs, or a fresh seasonal start.</p>
+        <span class="service-tag">Move-In/Out · Spring Clean</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY US ── -->
+<section id="why" class="why-section">
+  <div class="container">
+    <span class="section-label reveal">Why choose Silva</span>
+    <h2 class="section-title reveal">Your home deserves this care ♡</h2>
+    <p class="section-sub reveal">Committed to quality, trust, and doing things right — every time we walk through your door.</p>
+    <div class="why-grid">
+      <div class="why-item reveal delay-1"><div class="w-icon">👷</div><h4>Trained Professionals</h4><p>Vetted, trusted staff you can rely on.</p></div>
+      <div class="why-item reveal delay-2"><div class="w-icon">🧴</div><h4>Quality Products</h4><p>Top-grade, safe cleaning products.</p></div>
+      <div class="why-item reveal delay-3"><div class="w-icon">🎯</div><h4>Personalised</h4><p>Every clean tailored to your needs.</p></div>
+      <div class="why-item reveal delay-4"><div class="w-icon">⏰</div><h4>Always Punctual</h4><p>On time, every single visit.</p></div>
+      <div class="why-item reveal delay-5"><div class="w-icon">✅</div><h4>100% Guarantee</h4><p>Not happy? We'll make it right.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <div class="container">
+    <span class="section-label reveal">Transparent pricing</span>
+    <h2 class="section-title reveal">Simple, Fair Rates</h2>
+    <p class="section-sub reveal">Prices vary by property size and requirements. Get in touch for a free personalised quote — no obligation.</p>
+    <!-- NOTE FOR KATLYN: Update these prices to match your actual rates! -->
+    <div class="pricing-grid">
+      <div class="pricing-card reveal delay-1">
+        <div class="pricing-icon">🏠</div>
+        <h3>Home Clean</h3>
+        <div class="pricing-from">Starting from</div>
+        <div class="pricing-price"><sup>€</sup>50</div>
+        <ul class="pricing-list">
+          <li>Living areas &amp; bedrooms</li>
+          <li>Kitchen &amp; bathrooms</li>
+          <li>Hoovering &amp; mopping</li>
+          <li>Weekly or fortnightly options</li>
+        </ul>
+        <a href="#booking" class="pricing-btn">Get a Quote →</a>
+      </div>
+      <div class="pricing-card featured reveal delay-2">
+        <div class="pricing-badge">✦ MOST POPULAR</div>
+        <div class="pricing-icon">✨</div>
+        <h3>Deep Clean</h3>
+        <div class="pricing-from">Starting from</div>
+        <div class="pricing-price"><sup>€</sup>80</div>
+        <ul class="pricing-list">
+          <li>Full top-to-bottom clean</li>
+          <li>Inside cupboards &amp; appliances</li>
+          <li>Skirting boards &amp; light fittings</li>
+          <li>Perfect for move-in / move-out</li>
+        </ul>
+        <a href="#booking" class="pricing-btn">Get a Quote →</a>
+      </div>
+      <div class="pricing-card reveal delay-3">
+        <div class="pricing-icon">🏢</div>
+        <h3>Commercial</h3>
+        <div class="pricing-from">Starting from</div>
+        <div class="pricing-price"><sup>€</sup>80</div>
+        <ul class="pricing-list">
+          <li>Offices &amp; retail spaces</li>
+          <li>Flexible early/late scheduling</li>
+          <li>Regular contracts available</li>
+          <li>Tailored to your business</li>
+        </ul>
+        <a href="#booking" class="pricing-btn">Get a Quote →</a>
+      </div>
+    </div>
+    <p class="pricing-note reveal">Window cleaning from <strong>€30</strong> · Post-construction from <strong>€120</strong> · Exact prices depend on property size. <a href="#booking">Contact us</a> for your free quote.</p>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials-section">
+  <div class="container">
+    <span class="section-label reveal">Happy customers</span>
+    <h2 class="section-title reveal">What Our Clients Say</h2>
+    <p class="section-sub reveal">We take pride in every clean. Here's what some of our clients have to say.</p>
+    <div class="reviews-grid">
+      <div class="review-card reveal delay-1">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Silva Cleaning Team have been doing my house fortnightly for six months now. I come home to an absolutely spotless house every time — they never miss a thing. Couldn't recommend them more highly.</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">S</div>
+          <div>
+            <div class="reviewer-name">Sarah M.</div>
+            <div class="reviewer-type">Regular residential client · Dublin</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal delay-2">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Used them for a post-construction clean after our extension was built. The house was covered in dust and debris — they made it absolutely perfect. Professional, fast, and great value. 10/10.</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">J</div>
+          <div>
+            <div class="reviewer-name">James O.</div>
+            <div class="reviewer-type">Post-construction clean · Wicklow</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal delay-3">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">We hired Silva for our office and the difference is incredible. The team is always punctual, thorough, and respectful of our workspace. Our staff actually noticed and commented on how clean it was!</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">E</div>
+          <div>
+            <div class="reviewer-name">Emma R.</div>
+            <div class="reviewer-type">Commercial client · Kildare</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEEDBACK ── -->
+<section id="feedback">
+  <div class="container">
+    <span class="section-label reveal">Share your experience</span>
+    <h2 class="section-title reveal">Leave Us a Review</h2>
+    <p class="section-sub reveal">We'd love to hear how we did. You can also send photos of the clean — we always appreciate it!</p>
+    <!-- Uses same Formspree endpoint — submissions go to your inbox -->
+    <form class="feedback-form reveal" id="feedbackForm">
+      <input type="hidden" name="_subject" value="New Review — Silva Cleaning Team"/>
+      <input type="hidden" name="form_type" value="customer_review"/>
+
+      <div class="form-group">
+        <span class="star-label">Your rating</span>
+        <div class="star-rating" id="starRating">
+          <input type="radio" name="rating" id="s5" value="5 stars ★★★★★"/><label for="s5" title="5 stars">★</label>
+          <input type="radio" name="rating" id="s4" value="4 stars ★★★★"/><label for="s4" title="4 stars">★</label>
+          <input type="radio" name="rating" id="s3" value="3 stars ★★★"/><label for="s3" title="3 stars">★</label>
+          <input type="radio" name="rating" id="s2" value="2 stars ★★"/><label for="s2" title="2 stars">★</label>
+          <input type="radio" name="rating" id="s1" value="1 star ★"/><label for="s1" title="1 star">★</label>
+        </div>
+        <div class="star-hint" id="starHint"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fb-name">Your name</label>
+          <input id="fb-name" name="name" type="text" placeholder="Maria" required/>
+        </div>
+        <div class="form-group">
+          <label for="fb-service">Service received</label>
+          <select id="fb-service" name="service">
+            <option>Residential Cleaning</option>
+            <option>Commercial Cleaning</option>
+            <option>Window Cleaning</option>
+            <option>Post-Construction Cleaning</option>
+            <option>Deep Clean</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fb-comment">Your feedback</label>
+        <textarea id="fb-comment" name="feedback" placeholder="Tell us about your experience — what did you love? Anything we could do better?" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Photos (optional)</label>
+        <div class="file-upload-area" id="uploadArea">
+          <input type="file" name="photos" id="photoInput" accept="image/*" multiple/>
+          <div class="file-upload-icon">📷</div>
+          <p><strong>Tap to add photos</strong><br/>JPG, PNG or HEIC — up to 5 photos</p>
+        </div>
+        <div class="file-preview" id="filePreview"></div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="fbSubmitBtn">Send My Review →</button>
+      <div class="form-msg" id="fbFormMsg"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="container">
+    <span class="section-label reveal">Got questions?</span>
+    <h2 class="section-title reveal">Frequently Asked Questions</h2>
+    <p class="section-sub reveal">Everything you need to know before booking. Still have a question? Just call us — 087 199 5233.</p>
+    <div class="faq-list">
+      <div class="faq-item reveal delay-1">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How do I book a clean?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Simply fill in the booking form on this page, or give us a call on 087 199 5233. We'll get back to you quickly to confirm the details and arrange a time that suits you. No complicated process — we keep it simple.</div></div>
+      </div>
+      <div class="faq-item reveal delay-2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I need to be home during the clean?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Not at all! Many of our regular clients provide a key or code so we can let ourselves in. All our staff are fully vetted and trustworthy. We'll lock up securely when we're done and let you know when we've finished.</div></div>
+      </div>
+      <div class="faq-item reveal delay-3">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What cleaning products do you use?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">We use professional-grade, high-quality cleaning products that are effective and safe for your family and pets. If you have any specific preferences or allergies, just let us know and we'll accommodate your needs.</div></div>
+      </div>
+      <div class="faq-item reveal delay-4">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How long does a clean take?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">It depends on the size of your property and the type of clean. A standard 3-bed home typically takes 2–3 hours for a regular clean, and 4–5 hours for a deep clean. We'll give you a more accurate estimate when you get in touch.</div></div>
+      </div>
+      <div class="faq-item reveal delay-5">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I cancel or reschedule?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Of course. Life happens! We just ask for as much notice as possible — ideally 24 hours. Give us a call or send a message and we'll sort it out with no fuss.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do you offer a satisfaction guarantee?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Absolutely — 100%. If you're not happy with any part of the clean, contact us within 24 hours and we'll come back to fix it at no extra charge. Your satisfaction is our priority.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BOOKING ── -->
+<section id="booking" class="booking-section">
+  <div class="container">
+    <div class="booking-layout">
+      <div>
+        <span class="section-label reveal-left">Get in touch</span>
+        <h2 class="section-title reveal-left">Book a Clean or Get a Free Quote</h2>
+        <p class="section-sub reveal-left">Fill in the form and we'll get back to you quickly — no obligation, no pressure.</p>
+        <ul class="checklist">
+          <li class="reveal-left delay-1"><div class="check-icon">✓</div>Free quote, no strings attached</li>
+          <li class="reveal-left delay-2"><div class="check-icon">✓</div>Flexible morning and afternoon slots</li>
+          <li class="reveal-left delay-3"><div class="check-icon">✓</div>One-off or regular bookings welcome</li>
+          <li class="reveal-left delay-4"><div class="check-icon">✓</div>Confirmation by phone or email</li>
+          <li class="reveal-left delay-5"><div class="check-icon">✓</div>Easy to reschedule or cancel</li>
+        </ul>
+        <a class="contact-box reveal-left" href="tel:0871995233">
+          <div class="phone-icon">📞</div>
+          <div>
+            <h4>Prefer to call us?</h4>
+            <p>087 199 5233</p>
+          </div>
+        </a>
+      </div>
+      <div class="reveal-right">
+        <!-- ╔══════════════════════════════════════════════════════════╗
+             ║  FORMSPREE SETUP (to make the form send real emails):   ║
+             ║  1. Go to https://formspree.io and sign up for free     ║
+             ║  2. Create a new form — it gives you a form ID          ║
+             ║  3. Replace YOUR_FORM_ID below with your actual ID      ║
+             ║     e.g. action="https://formspree.io/f/xpwzkabc"      ║
+             ╚══════════════════════════════════════════════════════════╝ -->
+        <form class="booking-form" id="bookingForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fname">First name</label>
+              <input id="fname" name="first_name" type="text" placeholder="Maria" autocomplete="given-name" required/>
+            </div>
+            <div class="form-group">
+              <label for="lname">Last name</label>
+              <input id="lname" name="last_name" type="text" placeholder="Silva" autocomplete="family-name" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone number</label>
+            <input id="phone" name="phone" type="tel" placeholder="087 000 0000" autocomplete="tel" required/>
+          </div>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label for="service">Type of clean</label>
+            <select id="service" name="service">
+              <option>Residential Cleaning</option>
+              <option>Commercial Cleaning</option>
+              <option>Window Cleaning</option>
+              <option>Post-Construction Cleaning</option>
+              <option>Deep Clean</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="date">Preferred date</label>
+              <input id="date" name="preferred_date" type="date"/>
+            </div>
+            <div class="form-group">
+              <label for="time">Time preference</label>
+              <select id="time" name="time_preference">
+                <option>Morning (8am–1pm)</option>
+                <option>Afternoon (1pm–6pm)</option>
+                <option>Either works</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="details">Extra details</label>
+            <textarea id="details" name="details" placeholder="e.g. number of rooms, address, any special requirements..."></textarea>
+          </div>
+          <input type="hidden" name="_subject" value="New Booking Request — Silva Cleaning Team"/>
+          <button type="submit" class="submit-btn" id="submitBtn">Request Free Quote →</button>
+          <div class="form-msg" id="formMsg"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HIRING ── -->
+<section id="hiring" class="hiring-section">
+  <div class="container">
+    <div class="hiring-layout">
+      <div>
+        <div class="hiring-badge reveal-left">✦ We're Hiring</div>
+        <h2 class="section-title reveal-left" style="color:white;">Join the Silva Cleaning Team</h2>
+        <p class="section-sub reveal-left">We're growing and looking for reliable, hardworking people. No experience needed — we train everyone from day one.</p>
+        <div class="perks-grid">
+          <div class="perk reveal delay-1"><div class="p-icon">💶</div><h5>Competitive Pay</h5><p>Above-average hourly rates</p></div>
+          <div class="perk reveal delay-2"><div class="p-icon">🕐</div><h5>Flexible Hours</h5><p>Part-time &amp; full-time available</p></div>
+          <div class="perk reveal delay-3"><div class="p-icon">📚</div><h5>Full Training</h5><p>No experience needed</p></div>
+          <div class="perk reveal delay-4"><div class="p-icon">🤝</div><h5>Great Team</h5><p>Friendly &amp; supportive environment</p></div>
+        </div>
+        <a class="apply-btn reveal" href="tel:0871995233">📞 Call to Apply — 087 199 5233</a>
+      </div>
+      <div class="hiring-card reveal-right">
+        <div class="big">🧹</div>
+        <h4>Your home deserves this care ♡</h4>
+        <p>Be part of a team that takes real pride in its work. We make a genuine difference in people's homes and workdays — every single visit.</p>
+        <p class="detail">📞 <a href="tel:0871995233">087 199 5233</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="f-logo">silva</div>
+  <div class="f-tag">Cleaning Team</div>
+  <div class="f-links">
+    <a href="#services">Services</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#why">Why Us</a>
+    <a href="#faq">FAQ</a>
+    <a href="#booking">Book Now</a>
+    <a href="#hiring">Careers</a>
+  </div>
+  <div class="f-phone"><a href="tel:0871995233">📞 087 199 5233</a></div>
+  <p>Free Quote — No Obligation</p>
+  <hr class="f-divider"/>
+  <p class="f-copy">© 2025 Silva Cleaning Team. Because every detail matters.</p>
+</footer>
+
+<!-- Mobile Sticky Bar -->
+<div class="mob-sticky">
+  <a class="mob-call" href="tel:0871995233">📞 Call Us</a>
+  <a class="mob-book" href="#booking">Book Now →</a>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── NAV SCROLL SHADOW ── */
+window.addEventListener('scroll', function() {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+/* ── HAMBURGER MENU ── */
+var ham = document.getElementById('hamburger');
+var mob = document.getElementById('mobileMenu');
+ham.addEventListener('click', function() {
+  ham.classList.toggle('open');
+  mob.classList.toggle('open');
+});
+document.querySelectorAll('.mob-link, .mob-cta').forEach(function(a) {
+  a.addEventListener('click', function() {
+    ham.classList.remove('open');
+    mob.classList.remove('open');
+  });
+});
+
+/* ── SCROLL REVEAL ── */
+var revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(function(el) { observer.observe(el); });
+
+/* ── FAQ ACCORDION ── */
+function toggleFaq(btn) {
+  var item = btn.parentElement;
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 4000);
+}
+
+/* ── STAR RATING HINT ── */
+var starLabels = {1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent!'};
+document.querySelectorAll('.star-rating input').forEach(function(input) {
+  input.addEventListener('change', function() {
+    document.getElementById('starHint').textContent = starLabels[this.value[0]] || '';
+  });
+});
+
+/* ── PHOTO PREVIEW ── */
+document.getElementById('photoInput').addEventListener('change', function() {
+  var preview = document.getElementById('filePreview');
+  preview.innerHTML = '';
+  var files = Array.from(this.files).slice(0, 5);
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.createElement('img');
+      img.src = e.target.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+  document.querySelector('#uploadArea p').innerHTML = '<strong>' + files.length + ' photo' + (files.length !== 1 ? 's' : '') + ' selected</strong>';
+});
+
+/* ── FEEDBACK FORM ── */
+document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('fbSubmitBtn');
+  var msg = document.getElementById('fbFormMsg');
+  msg.className = 'form-msg';
+  msg.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  var formData = new FormData(this);
+  try {
+    var res = await fetch('https://formspree.io/f/xqeobgnq', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      msg.textContent = '✅ Thank you for your review! We really appreciate it.';
+      msg.className = 'form-msg success';
+      this.reset();
+      document.getElementById('filePreview').innerHTML = '';
+      document.querySelector('#uploadArea p').innerHTML = '<strong>Tap to add photos</strong><br/>JPG, PNG or HEIC — up to 5 photos';
+      document.getElementById('starHint').textContent = '';
+      showToast('✅ Review submitted — thank you!');
+    } else { throw new Error(); }
+  } catch(err) {
+    msg.textContent = 'Something went wrong. Please try again or call us on 087 199 5233.';
+    msg.className = 'form-msg error';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send My Review →';
+});
+
+/* ── BOOKING FORM ──
+   HOW TO MAKE THIS SEND REAL EMAILS:
+   1. Sign up free at https://formspree.io
+   2. Create a new form — you'll get a URL like https://formspree.io/f/xpwzkabc
+   3. Replace 'YOUR_FORM_ID' in the fetch URL below with your actual ID
+   ────────────────────────────────────────────────────── */
+document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submitBtn');
+  var msg = document.getElementById('formMsg');
+  msg.className = 'form-msg';
+  msg.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  var formData = new FormData(this);
+
+  try {
+    /* Replace YOUR_FORM_ID with your Formspree form ID */
+    var res = await fetch('https://formspree.io/f/xqeobgnq', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok) {
+      msg.textContent = '✅ Request sent! We\'ll call you on ' + formData.get('phone') + ' very soon.';
+      msg.className = 'form-msg success';
+      this.reset();
+      showToast('✅ Booking request sent! We\'ll be in touch soon.');
+    } else {
+      throw new Error('Server error');
+    }
+  } catch (err) {
+    /* Fallback if Formspree not set up yet */
+    msg.textContent = 'Formspree not set up yet — please call us directly on 087 199 5233 to book.';
+    msg.className = 'form-msg error';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Request Free Quote →';
+});
+</script>
+</body>
+</html>
