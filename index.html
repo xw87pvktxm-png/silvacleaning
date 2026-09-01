@@ -351,7 +351,8 @@ body{padding-bottom:70px;}
     <li><a href="#why">Why Us</a></li>
     <li><a href="#feedback">Reviews</a></li>
     <li><a href="#faq">FAQ</a></li>
-    <li><a href="#hiring">Careers</a></li>
+    <li><a href="#hiring">Careers</a>
+            <a href="app.html">Staff Login</a></li>
   </ul>
   <div class="nav-right">
     <a class="nav-phone" href="tel:0871995233">📞 087 199 5233</a>
@@ -707,11 +708,7 @@ body{padding-bottom:70px;}
       </div>
       <div class="reveal-right">
         <!-- ╔══════════════════════════════════════════════════════════╗
-             ║  FORMSPREE SETUP (to make the form send real emails):   ║
-             ║  1. Go to https://formspree.io and sign up for free     ║
              ║  2. Create a new form — it gives you a form ID          ║
-             ║  3. Replace YOUR_FORM_ID below with your actual ID      ║
-             ║     e.g. action="https://formspree.io/f/xpwzkabc"      ║
              ╚══════════════════════════════════════════════════════════╝ -->
         <form class="booking-form" id="bookingForm">
           <div class="form-row">
@@ -906,7 +903,7 @@ document.getElementById('feedbackForm').addEventListener('submit', async functio
   btn.textContent = 'Sending…';
   var formData = new FormData(this);
   try {
-    var res = await fetch('https://formspree.io/f/xqeobgnq', {
+    var res = await fetch('about:blank#form-endpoint-removed', {
       method: 'POST',
       body: formData,
       headers: { 'Accept': 'application/json' }
@@ -929,10 +926,7 @@ document.getElementById('feedbackForm').addEventListener('submit', async functio
 });
 
 /* ── BOOKING FORM ──
-   HOW TO MAKE THIS SEND REAL EMAILS:
-   1. Sign up free at https://formspree.io
-   2. Create a new form — you'll get a URL like https://formspree.io/f/xpwzkabc
-   3. Replace 'YOUR_FORM_ID' in the fetch URL below with your actual ID
+   Bookings now go to the Silva Cleaning database and show up in the staff app (app.html) under Requests. The handler at the very end of this file does that; the code just below is the old email version and is never reached.
    ────────────────────────────────────────────────────── */
 document.getElementById('bookingForm').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -947,7 +941,7 @@ document.getElementById('bookingForm').addEventListener('submit', async function
 
   try {
     /* Replace YOUR_FORM_ID with your Formspree form ID */
-    var res = await fetch('https://formspree.io/f/xqeobgnq', {
+    var res = await fetch('about:blank#form-endpoint-removed', {
       method: 'POST',
       body: formData,
       headers: { 'Accept': 'application/json' }
@@ -970,6 +964,114 @@ document.getElementById('bookingForm').addEventListener('submit', async function
   btn.disabled = false;
   btn.textContent = 'Request Free Quote →';
 });
+</script>
+
+<!-- Form handling — submissions go to the Silva Cleaning database.
+     They appear in the staff app (app.html) under Requests. -->
+<script>
+(function () {
+  var API = "https://ssmbmykkepgypnhpezed.supabase.co/rest/v1/";
+  var KEY = "sb_publishable_wNh5jRVLIczoAeTOBXA97A_0loighH4";
+
+  function say(form, text, ok) {
+    var el = form.querySelector(".form-msg");
+    if (!el) { el = document.createElement("div"); el.className = "form-msg"; form.appendChild(el); }
+    el.textContent = text;
+    el.style.marginTop = "12px";
+    el.style.fontWeight = "600";
+    el.style.color = ok ? "#0F7B4F" : "#B42318";
+  }
+
+  function val(form, name) {
+    var el = form.querySelector("[name='" + name + "']");
+    return el ? String(el.value || "").trim() : "";
+  }
+
+  function send(table, payload) {
+    return fetch(API + table, {
+      method: "POST",
+      headers: {
+        "apikey": KEY,
+        "Authorization": "Bearer " + KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  // Replacing the node drops every listener attached to it earlier,
+  // so only this handler runs.
+  function rewire(id, handler) {
+    var old = document.getElementById(id);
+    if (!old) return;
+    var form = old.cloneNode(true);
+    old.parentNode.replaceChild(form, old);
+    form.addEventListener("submit", function (e) { e.preventDefault(); handler(form); });
+  }
+
+  async function submit(form, table, payload, okText) {
+    var btn = form.querySelector("button[type=submit]");
+    var label = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = "Sending..."; }
+    try {
+      var res = await send(table, payload);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      form.reset();
+      say(form, okText, true);
+    } catch (err) {
+      say(form, "Sorry, that did not send. Please call us on 087 199 5233.", false);
+      console.error(table + " submit failed", err);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = label; }
+    }
+  }
+
+  function wire() {
+    rewire("bookingForm", function (form) {
+      var name = [val(form, "first_name"), val(form, "last_name")].filter(Boolean).join(" ");
+      var phone = val(form, "phone");
+      if (!name || !phone) return say(form, "Please give us your name and a phone number.", false);
+
+      var digits = phone.replace(/[^0-9+]/g, "");
+      if (!/^(\+353|0)[0-9]{6,13}$/.test(digits)) {
+        return say(form, "That phone number does not look right - please check it.", false);
+      }
+
+      var date = val(form, "preferred_date");
+      if (date && date < new Date().toISOString().slice(0, 10)) {
+        return say(form, "Please choose a date that has not already passed.", false);
+      }
+
+      var payload = { name: name, phone: phone };
+      var email = val(form, "email");                if (email) payload.email = email;
+      var svc   = val(form, "service");              if (svc)   payload.service_type = svc;
+      var time  = val(form, "time_preference");      if (time)  payload.preferred_time = time;
+      var notes = val(form, "details");              if (notes) payload.notes = notes;
+      if (date) payload.preferred_date = date;
+
+      submit(form, "booking_requests", payload,
+             "Thanks - we have your request and will call you back shortly.");
+    });
+
+    rewire("feedbackForm", function (form) {
+      var name = val(form, "name");
+      if (!name) return say(form, "Please tell us your name.", false);
+
+      var checked = form.querySelector("[name='rating']:checked");
+      var payload = { name: name };
+      if (checked) payload.rating = Number(checked.value);
+      var svc = val(form, "service");                if (svc) payload.service_type = svc;
+      var txt = val(form, "feedback");               if (txt) payload.comment = txt;
+
+      submit(form, "feedback", payload,
+             "Thank you - we really appreciate you taking the time.");
+    });
+  }
+
+  if (document.readyState === "complete") wire();
+  else window.addEventListener("load", wire);
+})();
 </script>
 </body>
 </html>
