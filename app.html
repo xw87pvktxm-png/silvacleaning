@@ -107,6 +107,12 @@ main{flex:1;padding:18px 14px 40px}
 .pill.svc{background:var(--grey-pale);color:var(--muted);text-transform:none;font-weight:600}
 .pill.who{background:var(--blue-light);color:var(--navy);text-transform:none;font-weight:600}
 .pill.role{background:var(--navy);color:#fff}
+.pill.new{background:var(--amber);color:#fff}
+.newbanner{display:flex;align-items:center;gap:12px;padding:13px 15px;margin-bottom:12px;
+  border-radius:var(--radius-sm);background:var(--amber-pale);border:1px solid var(--amber)}
+.newbanner .grow{flex:1;min-width:0}
+.newbanner strong{color:var(--navy);font-size:.95rem}
+.newbanner .sub{font-size:.8rem;color:var(--muted);margin-top:2px}
 
 .daylabel{
   font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;
@@ -269,6 +275,7 @@ textarea{resize:vertical;min-height:74px}
   </nav>
 
   <main>
+    <div id="newBanner"></div>
     <div id="globalMsg"></div>
     <section id="panel-today"   class="panel stack"></section>
     <section id="panel-week"    class="panel stack hidden"></section>
@@ -411,7 +418,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const JOB_SELECT =
   '*, clients(id,name,phone,email,address,eircode,notes),' +
-  ' job_assignments(cleaner_id, profiles(id,full_name,phone))';
+  ' job_assignments(cleaner_id, assigned_at, profiles(id,full_name,phone))';
 
 let me = null;          // my profile row
 let isManager = false;
@@ -419,6 +426,7 @@ let team = [];          // profiles (managers only)
 let clients = [];       // clients (managers only)
 let requests = [];      // website booking requests (managers only)
 let reviews  = [];      // website reviews awaiting or holding approval
+let newAssignments = []; // jobs put on my plate since I last looked
 let currentTab = 'today';
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -627,6 +635,7 @@ async function start(session) {
   $$('.mgr').forEach(el => el.classList.toggle('hidden', !isManager));
 
   if (isManager) { await loadTeam(); await loadClients(); await loadRequests(); await loadReviews(); }
+  await loadNewAssignments();
   selectTab('today');
 }
 
@@ -649,6 +658,56 @@ function selectTab(tab) {
   if (tab === 'reviews')  renderReviews();
   if (tab === 'clients') renderClients();
   if (tab === 'team')    renderTeam();
+}
+
+/* ---------------- what is new for me ----------------
+   A manager putting someone on a job is the one thing a cleaner needs to be
+   told about, and email cannot reach them yet (Resend only delivers to the
+   account owner until a domain is verified). So the app tells them itself:
+   anything assigned after profiles.assignments_seen_at is flagged until they
+   acknowledge it. Managers get assigned to jobs too, so this is for everyone. */
+
+async function loadNewAssignments() {
+  const { data, error } = await db.from('job_assignments')
+    .select('job_id, assigned_at')
+    .eq('cleaner_id', me.id)
+    .gt('assigned_at', me.assignments_seen_at);
+  if (error) { console.error(error); newAssignments = []; }
+  else newAssignments = data || [];
+  renderNewBanner();
+}
+
+const isNewToMe = j => newAssignments.some(a => a.job_id === j.id);
+
+function renderNewBanner() {
+  const el = $('#newBanner');
+  const n = newAssignments.length;
+  if (!n) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="newbanner">
+      <div class="grow">
+        <strong>${n} new job${n === 1 ? '' : 's'} for you</strong>
+        <div class="sub">Added to your schedule since you last checked.</div>
+      </div>
+      <button class="btn ghost sm" id="seenBtn">Got it</button>
+    </div>`;
+  $('#seenBtn').onclick = markAssignmentsSeen;
+}
+
+async function markAssignmentsSeen() {
+  const btn = $('#seenBtn');
+  if (btn) btn.disabled = true;
+  const now = new Date().toISOString();
+  const { error } = await db.from('profiles')
+    .update({ assignments_seen_at: now }).eq('id', me.id);
+  if (error) {
+    if (btn) btn.disabled = false;
+    return flash($('#globalMsg'), error.message);
+  }
+  me.assignments_seen_at = now;
+  newAssignments = [];
+  renderNewBanner();
+  selectTab(currentTab);   // repaint so the "New" pills disappear
 }
 
 /* ---------------- job list ---------------- */
@@ -705,6 +764,7 @@ function jobCard(j) {
       <span class="client">${esc(j.clients?.name || 'Client')}</span>
       <span class="addr">${esc(jobAddress(j))}</span>
       <span class="meta">
+        ${isNewToMe(j) ? '<span class="pill new">New</span>' : ''}
         <span class="pill ${j.status}">${esc(j.status.replace('_', ' '))}</span>
         <span class="pill svc">${esc(j.service_type)}</span>
         ${showCrew ? `<span class="pill who">${esc(crew.join(', '))}</span>`
@@ -830,12 +890,22 @@ async function jobAction(act, j, btn) {
       if (error) throw error;
     }
     else if (act === 'reassign') {
-      const wanted = $$('#reassign input:checked').map(i => i.value);
-      const { error: delErr } = await db.from('job_assignments').delete().eq('job_id', j.id);
-      if (delErr) throw delErr;
-      if (wanted.length) {
+      // Clearing every row and re-inserting would look like a fresh assignment
+      // to everyone already on the job: they would be told again, and the job
+      // would show as "New" to them a second time. Only apply the difference.
+      const wanted  = $$('#reassign input:checked').map(i => i.value);
+      const current = (j.job_assignments || []).map(a => a.cleaner_id);
+      const added   = wanted.filter(id => !current.includes(id));
+      const removed = current.filter(id => !wanted.includes(id));
+
+      if (removed.length) {
+        const { error: delErr } = await db.from('job_assignments')
+          .delete().eq('job_id', j.id).in('cleaner_id', removed);
+        if (delErr) throw delErr;
+      }
+      if (added.length) {
         const { error: insErr } = await db.from('job_assignments')
-          .insert(wanted.map(id => ({ job_id: j.id, cleaner_id: id })));
+          .insert(added.map(id => ({ job_id: j.id, cleaner_id: id })));
         if (insErr) throw insErr;
       }
     }
