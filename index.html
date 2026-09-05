@@ -6,7 +6,54 @@
 <title>Silva Cleaning Team — Professional Cleaning Services</title>
 <meta name="description" content="Professional residential, commercial, window, and deep cleaning services. Trusted, thorough, and reliable. Get a free quote today — 087 199 5233."/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>"/>
+<link rel="canonical" href="https://xw87pvktxm-png.github.io/silvacleaning/"/>
+<meta name="theme-color" content="#0D2B6E"/>
+
+<!-- How the page looks when someone shares the link on WhatsApp, Facebook or iMessage. -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Silva Cleaning Team"/>
+<meta property="og:title" content="Silva Cleaning Team — Professional Cleaning Services"/>
+<meta property="og:description" content="Residential, commercial, window and deep cleaning. Trusted, thorough and reliable. Free quote — 087 199 5233."/>
+<meta property="og:url" content="https://xw87pvktxm-png.github.io/silvacleaning/"/>
+<meta property="og:locale" content="en_IE"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Silva Cleaning Team — Professional Cleaning Services"/>
+<meta name="twitter:description" content="Residential, commercial, window and deep cleaning. Free quote — 087 199 5233."/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<!-- Tells Google this is a local business so it can show the phone number,
+     hours and service area directly in search results. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HomeAndConstructionBusiness",
+  "name": "Silva Cleaning Team",
+  "description": "Professional residential, commercial, window and deep cleaning services in Leinster, Ireland.",
+  "url": "https://xw87pvktxm-png.github.io/silvacleaning/",
+  "telephone": "+353871995233",
+  "priceRange": "€€",
+  "areaServed": [
+    { "@type": "AdministrativeArea", "name": "Dublin" },
+    { "@type": "AdministrativeArea", "name": "Wicklow" },
+    { "@type": "AdministrativeArea", "name": "Kildare" }
+  ],
+  "address": { "@type": "PostalAddress", "addressCountry": "IE" },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Cleaning services",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Residential cleaning" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Commercial cleaning" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Window cleaning" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Post-construction cleaning" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Deep clean" } }
+    ]
+  }
+}
+</script>
 <style>
 /* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -27,6 +74,20 @@
   --shadow-md:0 8px 40px rgba(13,43,110,0.13);
 }
 html{scroll-behavior:smooth;}
+
+/* ── ACCESSIBILITY ── */
+/* Hides text from sight but keeps it for screen readers. */
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
+/* A visible outline for anyone navigating by keyboard. */
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px;}
+.skip-link{position:absolute;left:-9999px;top:0;z-index:1000;background:var(--navy);color:#fff;padding:0.75rem 1.25rem;border-radius:0 0 var(--radius-sm) 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;}
+/* Respect the system setting for people who get motion sickness. */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}
+  .reveal,.reveal-left,.reveal-right{opacity:1!important;transform:none!important;}
+}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:16px;overflow-x:hidden;}
 
 /* ── REVEAL ANIMATIONS ── */
@@ -257,7 +318,10 @@ section{padding:4.5rem 1.5rem;}
 .feedback-form{background:white;border-radius:var(--radius);padding:2rem 1.5rem;border:1px solid var(--blue-light);box-shadow:var(--shadow);max-width:640px;}
 /* Star rating */
 .star-rating{display:flex;gap:0.35rem;margin-bottom:0.25rem;flex-direction:row-reverse;justify-content:flex-end;}
-.star-rating input{display:none;}
+/* display:none would remove these from the keyboard and from screen readers
+   entirely, so they are hidden visually only. */
+.star-rating input{position:absolute;opacity:0;width:1px;height:1px;}
+.star-rating input:focus-visible + label{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px;}
 .star-rating label{font-size:2rem;color:#CBD5E0;cursor:pointer;transition:color 0.15s;line-height:1;}
 .star-rating input:checked ~ label,
 .star-rating label:hover,
@@ -338,9 +402,10 @@ body{padding-bottom:70px;}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
 <!-- ── NAV ── -->
-<nav id="mainNav">
+<nav id="mainNav" aria-label="Main">
   <a class="logo" href="#top">
     <span class="logo-top">silva</span>
     <span class="logo-bottom">Cleaning Team</span>
@@ -351,13 +416,13 @@ body{padding-bottom:70px;}
     <li><a href="#why">Why Us</a></li>
     <li><a href="#feedback">Reviews</a></li>
     <li><a href="#faq">FAQ</a></li>
-    <li><a href="#hiring">Careers</a>
-            <a href="app.html">Staff Login</a></li>
+    <li><a href="#hiring">Careers</a></li>
+    <li><a href="app.html">Staff Login</a></li>
   </ul>
   <div class="nav-right">
     <a class="nav-phone" href="tel:0871995233">📞 087 199 5233</a>
     <a class="nav-cta" href="#booking">Free Quote</a>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -371,10 +436,12 @@ body{padding-bottom:70px;}
   <a href="#feedback" class="mob-link">Reviews</a>
   <a href="#faq" class="mob-link">FAQ</a>
   <a href="#hiring" class="mob-link">Careers</a>
+  <a href="app.html" class="mob-link">Staff Login</a>
   <a href="#booking" class="mob-cta">Get a Free Quote →</a>
 </div>
 
 <!-- ── HERO ── -->
+<main id="main">
 <section class="hero" id="top">
   <span class="sparkle s1">✦</span>
   <span class="sparkle s2">✦</span>
@@ -531,7 +598,7 @@ body{padding-bottom:70px;}
     <span class="section-label reveal">Happy customers</span>
     <h2 class="section-title reveal">What Our Clients Say</h2>
     <p class="section-sub reveal">We take pride in every clean. Here's what some of our clients have to say.</p>
-    <div class="reviews-grid">
+    <div class="reviews-grid" id="reviewsGrid">
       <div class="review-card reveal delay-1">
         <div class="review-stars">★★★★★</div>
         <p class="review-text">Silva Cleaning Team have been doing my house fortnightly for six months now. I come home to an absolutely spotless house every time — they never miss a thing. Couldn't recommend them more highly.</p>
@@ -574,23 +641,19 @@ body{padding-bottom:70px;}
   <div class="container">
     <span class="section-label reveal">Share your experience</span>
     <h2 class="section-title reveal">Leave Us a Review</h2>
-    <p class="section-sub reveal">We'd love to hear how we did. You can also send photos of the clean — we always appreciate it!</p>
-    <!-- Uses same Formspree endpoint — submissions go to your inbox -->
+    <p class="section-sub reveal">We'd love to hear how we did. Every review is read by the team.</p>
     <form class="feedback-form reveal" id="feedbackForm">
-      <input type="hidden" name="_subject" value="New Review — Silva Cleaning Team"/>
-      <input type="hidden" name="form_type" value="customer_review"/>
-
-      <div class="form-group">
-        <span class="star-label">Your rating</span>
+      <fieldset class="form-group" style="border:0;padding:0;margin:0;">
+        <legend class="star-label" style="padding:0;">Your rating</legend>
         <div class="star-rating" id="starRating">
-          <input type="radio" name="rating" id="s5" value="5 stars ★★★★★"/><label for="s5" title="5 stars">★</label>
-          <input type="radio" name="rating" id="s4" value="4 stars ★★★★"/><label for="s4" title="4 stars">★</label>
-          <input type="radio" name="rating" id="s3" value="3 stars ★★★"/><label for="s3" title="3 stars">★</label>
-          <input type="radio" name="rating" id="s2" value="2 stars ★★"/><label for="s2" title="2 stars">★</label>
-          <input type="radio" name="rating" id="s1" value="1 star ★"/><label for="s1" title="1 star">★</label>
+          <input type="radio" name="rating" id="s5" value="5"/><label for="s5"><span class="visually-hidden">5 stars — excellent</span><span aria-hidden="true">★</span></label>
+          <input type="radio" name="rating" id="s4" value="4"/><label for="s4"><span class="visually-hidden">4 stars — very good</span><span aria-hidden="true">★</span></label>
+          <input type="radio" name="rating" id="s3" value="3"/><label for="s3"><span class="visually-hidden">3 stars — good</span><span aria-hidden="true">★</span></label>
+          <input type="radio" name="rating" id="s2" value="2"/><label for="s2"><span class="visually-hidden">2 stars — fair</span><span aria-hidden="true">★</span></label>
+          <input type="radio" name="rating" id="s1" value="1"/><label for="s1"><span class="visually-hidden">1 star — poor</span><span aria-hidden="true">★</span></label>
         </div>
-        <div class="star-hint" id="starHint"></div>
-      </div>
+        <div class="star-hint" id="starHint" aria-live="polite"></div>
+      </fieldset>
 
       <div class="form-row">
         <div class="form-group">
@@ -614,18 +677,8 @@ body{padding-bottom:70px;}
         <textarea id="fb-comment" name="feedback" placeholder="Tell us about your experience — what did you love? Anything we could do better?" required></textarea>
       </div>
 
-      <div class="form-group">
-        <label>Photos (optional)</label>
-        <div class="file-upload-area" id="uploadArea">
-          <input type="file" name="photos" id="photoInput" accept="image/*" multiple/>
-          <div class="file-upload-icon">📷</div>
-          <p><strong>Tap to add photos</strong><br/>JPG, PNG or HEIC — up to 5 photos</p>
-        </div>
-        <div class="file-preview" id="filePreview"></div>
-      </div>
-
       <button type="submit" class="submit-btn" id="fbSubmitBtn">Send My Review →</button>
-      <div class="form-msg" id="fbFormMsg"></div>
+      <div class="form-msg" id="fbFormMsg" role="status" aria-live="polite"></div>
     </form>
   </div>
 </section>
@@ -638,42 +691,42 @@ body{padding-bottom:70px;}
     <p class="section-sub reveal">Everything you need to know before booking. Still have a question? Just call us — 087 199 5233.</p>
     <div class="faq-list">
       <div class="faq-item reveal delay-1">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)">
           How do I book a clean?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a"><div class="faq-a-inner">Simply fill in the booking form on this page, or give us a call on 087 199 5233. We'll get back to you quickly to confirm the details and arrange a time that suits you. No complicated process — we keep it simple.</div></div>
       </div>
       <div class="faq-item reveal delay-2">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)">
           Do I need to be home during the clean?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a"><div class="faq-a-inner">Not at all! Many of our regular clients provide a key or code so we can let ourselves in. All our staff are fully vetted and trustworthy. We'll lock up securely when we're done and let you know when we've finished.</div></div>
       </div>
       <div class="faq-item reveal delay-3">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)">
           What cleaning products do you use?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a"><div class="faq-a-inner">We use professional-grade, high-quality cleaning products that are effective and safe for your family and pets. If you have any specific preferences or allergies, just let us know and we'll accommodate your needs.</div></div>
       </div>
       <div class="faq-item reveal delay-4">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)">
           How long does a clean take?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a"><div class="faq-a-inner">It depends on the size of your property and the type of clean. A standard 3-bed home typically takes 2–3 hours for a regular clean, and 4–5 hours for a deep clean. We'll give you a more accurate estimate when you get in touch.</div></div>
       </div>
       <div class="faq-item reveal delay-5">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)">
           Can I cancel or reschedule?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a"><div class="faq-a-inner">Of course. Life happens! We just ask for as much notice as possible — ideally 24 hours. Give us a call or send a message and we'll sort it out with no fuss.</div></div>
       </div>
       <div class="faq-item reveal">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" aria-expanded="false" onclick="toggleFaq(this)">
           Do you offer a satisfaction guarantee?
           <span class="faq-chevron">▼</span>
         </button>
@@ -757,9 +810,8 @@ body{padding-bottom:70px;}
             <label for="details">Extra details</label>
             <textarea id="details" name="details" placeholder="e.g. number of rooms, address, any special requirements..."></textarea>
           </div>
-          <input type="hidden" name="_subject" value="New Booking Request — Silva Cleaning Team"/>
           <button type="submit" class="submit-btn" id="submitBtn">Request Free Quote →</button>
-          <div class="form-msg" id="formMsg"></div>
+          <div class="form-msg" id="formMsg" role="status" aria-live="polite"></div>
         </form>
       </div>
     </div>
@@ -791,6 +843,7 @@ body{padding-bottom:70px;}
     </div>
   </div>
 </section>
+</main>
 
 <!-- ── FOOTER ── -->
 <footer>
@@ -807,7 +860,7 @@ body{padding-bottom:70px;}
   <div class="f-phone"><a href="tel:0871995233">📞 087 199 5233</a></div>
   <p>Free Quote — No Obligation</p>
   <hr class="f-divider"/>
-  <p class="f-copy">© 2025 Silva Cleaning Team. Because every detail matters.</p>
+  <p class="f-copy">© <span id="year">2026</span> Silva Cleaning Team. Because every detail matters.</p>
 </footer>
 
 <!-- Mobile Sticky Bar -->
@@ -821,22 +874,32 @@ body{padding-bottom:70px;}
 
 <script>
 /* ── NAV SCROLL SHADOW ── */
+/* Throttled to one update per frame instead of one per scroll event. */
+var navEl = document.getElementById('mainNav'), navTick = false;
 window.addEventListener('scroll', function() {
-  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
-});
+  if (navTick) return;
+  navTick = true;
+  requestAnimationFrame(function() {
+    navEl.classList.toggle('scrolled', window.scrollY > 10);
+    navTick = false;
+  });
+}, { passive: true });
 
 /* ── HAMBURGER MENU ── */
 var ham = document.getElementById('hamburger');
 var mob = document.getElementById('mobileMenu');
-ham.addEventListener('click', function() {
-  ham.classList.toggle('open');
-  mob.classList.toggle('open');
-});
+function setMenu(open) {
+  ham.classList.toggle('open', open);
+  mob.classList.toggle('open', open);
+  ham.setAttribute('aria-expanded', String(open));
+}
+ham.addEventListener('click', function() { setMenu(!mob.classList.contains('open')); });
 document.querySelectorAll('.mob-link, .mob-cta').forEach(function(a) {
-  a.addEventListener('click', function() {
-    ham.classList.remove('open');
-    mob.classList.remove('open');
-  });
+  a.addEventListener('click', function() { setMenu(false); });
+});
+/* Escape closes the menu, which is what keyboard users expect. */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && mob.classList.contains('open')) { setMenu(false); ham.focus(); }
 });
 
 /* ── SCROLL REVEAL ── */
@@ -857,6 +920,10 @@ function toggleFaq(btn) {
   var isOpen = item.classList.contains('open');
   document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
   if (!isOpen) item.classList.add('open');
+  /* Tell screen readers which question is open. */
+  document.querySelectorAll('.faq-q').forEach(function(b) {
+    b.setAttribute('aria-expanded', String(b.parentElement.classList.contains('open')));
+  });
 }
 
 /* ── TOAST ── */
@@ -868,6 +935,9 @@ function showToast(msg) {
 }
 
 /* ── STAR RATING HINT ── */
+var yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
+
 var starLabels = {1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent!'};
 document.querySelectorAll('.star-rating input').forEach(function(input) {
   input.addEventListener('change', function() {
@@ -875,95 +945,10 @@ document.querySelectorAll('.star-rating input').forEach(function(input) {
   });
 });
 
-/* ── PHOTO PREVIEW ── */
-document.getElementById('photoInput').addEventListener('change', function() {
-  var preview = document.getElementById('filePreview');
-  preview.innerHTML = '';
-  var files = Array.from(this.files).slice(0, 5);
-  files.forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var img = document.createElement('img');
-      img.src = e.target.result;
-      preview.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-  document.querySelector('#uploadArea p').innerHTML = '<strong>' + files.length + ' photo' + (files.length !== 1 ? 's' : '') + ' selected</strong>';
-});
+/* The booking and review forms are wired up at the bottom of this file:
+   they post straight to the Silva Cleaning database and appear in the
+   staff app (app.html). The old email versions used to live here. */
 
-/* ── FEEDBACK FORM ── */
-document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  var btn = document.getElementById('fbSubmitBtn');
-  var msg = document.getElementById('fbFormMsg');
-  msg.className = 'form-msg';
-  msg.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-  var formData = new FormData(this);
-  try {
-    var res = await fetch('about:blank#form-endpoint-removed', {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
-    if (res.ok) {
-      msg.textContent = '✅ Thank you for your review! We really appreciate it.';
-      msg.className = 'form-msg success';
-      this.reset();
-      document.getElementById('filePreview').innerHTML = '';
-      document.querySelector('#uploadArea p').innerHTML = '<strong>Tap to add photos</strong><br/>JPG, PNG or HEIC — up to 5 photos';
-      document.getElementById('starHint').textContent = '';
-      showToast('✅ Review submitted — thank you!');
-    } else { throw new Error(); }
-  } catch(err) {
-    msg.textContent = 'Something went wrong. Please try again or call us on 087 199 5233.';
-    msg.className = 'form-msg error';
-  }
-  btn.disabled = false;
-  btn.textContent = 'Send My Review →';
-});
-
-/* ── BOOKING FORM ──
-   Bookings now go to the Silva Cleaning database and show up in the staff app (app.html) under Requests. The handler at the very end of this file does that; the code just below is the old email version and is never reached.
-   ────────────────────────────────────────────────────── */
-document.getElementById('bookingForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  var btn = document.getElementById('submitBtn');
-  var msg = document.getElementById('formMsg');
-  msg.className = 'form-msg';
-  msg.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  var formData = new FormData(this);
-
-  try {
-    /* Replace YOUR_FORM_ID with your Formspree form ID */
-    var res = await fetch('about:blank#form-endpoint-removed', {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
-
-    if (res.ok) {
-      msg.textContent = '✅ Request sent! We\'ll call you on ' + formData.get('phone') + ' very soon.';
-      msg.className = 'form-msg success';
-      this.reset();
-      showToast('✅ Booking request sent! We\'ll be in touch soon.');
-    } else {
-      throw new Error('Server error');
-    }
-  } catch (err) {
-    /* Fallback if Formspree not set up yet */
-    msg.textContent = 'Formspree not set up yet — please call us directly on 087 199 5233 to book.';
-    msg.className = 'form-msg error';
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Request Free Quote →';
-});
 </script>
 
 <!-- Form handling — submissions go to the Silva Cleaning database.
@@ -977,9 +962,16 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     var el = form.querySelector(".form-msg");
     if (!el) { el = document.createElement("div"); el.className = "form-msg"; form.appendChild(el); }
     el.textContent = text;
-    el.style.marginTop = "12px";
-    el.style.fontWeight = "600";
-    el.style.color = ok ? "#0F7B4F" : "#B42318";
+    // .form-msg is display:none until it carries a success or error class, so
+    // setting the class is what actually puts the message on screen. Inline
+    // colours were being applied to an element nobody could see.
+    el.className = "form-msg " + (ok ? "success" : "error");
+  }
+
+  function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
   }
 
   function val(form, name) {
@@ -1000,13 +992,13 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     });
   }
 
-  // Replacing the node drops every listener attached to it earlier,
-  // so only this handler runs.
-  function rewire(id, handler) {
-    var old = document.getElementById(id);
-    if (!old) return;
-    var form = old.cloneNode(true);
-    old.parentNode.replaceChild(form, old);
+  // This used to clone the form to strip the old email handler off it. That
+  // also threw away the star-rating listeners attached further up the page,
+  // so the rating hint silently stopped working. The old handler is gone
+  // now, so the listener can just be added to the form that is already here.
+  function wireForm(id, handler) {
+    var form = document.getElementById(id);
+    if (!form) return;
     form.addEventListener("submit", function (e) { e.preventDefault(); handler(form); });
   }
 
@@ -1018,6 +1010,8 @@ document.getElementById('bookingForm').addEventListener('submit', async function
       var res = await send(table, payload);
       if (!res.ok) throw new Error("HTTP " + res.status);
       form.reset();
+      var hint = form.querySelector(".star-hint");
+      if (hint) hint.textContent = "";
       say(form, okText, true);
     } catch (err) {
       say(form, "Sorry, that did not send. Please call us on 087 199 5233.", false);
@@ -1028,7 +1022,7 @@ document.getElementById('bookingForm').addEventListener('submit', async function
   }
 
   function wire() {
-    rewire("bookingForm", function (form) {
+    wireForm("bookingForm", function (form) {
       var name = [val(form, "first_name"), val(form, "last_name")].filter(Boolean).join(" ");
       var phone = val(form, "phone");
       if (!name || !phone) return say(form, "Please give us your name and a phone number.", false);
@@ -1054,7 +1048,7 @@ document.getElementById('bookingForm').addEventListener('submit', async function
              "Thanks - we have your request and will call you back shortly.");
     });
 
-    rewire("feedbackForm", function (form) {
+    wireForm("feedbackForm", function (form) {
       var name = val(form, "name");
       if (!name) return say(form, "Please tell us your name.", false);
 
@@ -1068,6 +1062,59 @@ document.getElementById('bookingForm').addEventListener('submit', async function
              "Thank you - we really appreciate you taking the time.");
     });
   }
+
+  /* ---- Real reviews on the website -------------------------------------
+     Only reviews a manager has ticked "approve" in the staff app are readable
+     by the public; row-level security enforces that, not this code. Until
+     there are approved reviews the cards already in the page are left alone. */
+
+  function initial(name) {
+    var n = String(name || "").trim();
+    return n ? n[0].toUpperCase() : "?";
+  }
+
+  function shortName(name) {
+    // "Maria Fernandes" -> "Maria F." so a full name is never published.
+    var parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return "A customer";
+    if (parts.length === 1) return parts[0];
+    return parts[0] + " " + parts[parts.length - 1][0].toUpperCase() + ".";
+  }
+
+  function reviewCard(r) {
+    var n = Math.max(0, Math.min(5, Number(r.rating) || 0));
+    var stars = n ? "★".repeat(n) + "☆".repeat(5 - n) : "";
+    return '<div class="review-card">'
+      + (stars ? '<div class="review-stars" aria-label="' + n + ' out of 5 stars">' + stars + "</div>" : "")
+      + '<p class="review-text">' + esc(r.comment) + "</p>"
+      + '<div class="reviewer">'
+      +   '<div class="reviewer-avatar" aria-hidden="true">' + esc(initial(r.name)) + "</div>"
+      +   "<div>"
+      +     '<div class="reviewer-name">' + esc(shortName(r.name)) + "</div>"
+      +     '<div class="reviewer-type">' + esc(r.service_type || "Verified customer") + "</div>"
+      +   "</div>"
+      + "</div></div>";
+  }
+
+  async function loadReviews() {
+    var grid = document.getElementById("reviewsGrid");
+    if (!grid) return;
+    try {
+      var res = await fetch(API + "feedback?select=name,service_type,rating,comment"
+        + "&is_approved=eq.true&comment=not.is.null&order=created_at.desc&limit=6",
+        { headers: { apikey: KEY, Authorization: "Bearer " + KEY } });
+      if (!res.ok) return;
+      var rows = await res.json();
+      rows = (rows || []).filter(function (r) { return String(r.comment || "").trim(); });
+      if (!rows.length) return;
+      grid.innerHTML = rows.map(reviewCard).join("");
+    } catch (err) {
+      // A failed lookup just leaves the existing cards in place.
+      console.error("reviews load failed", err);
+    }
+  }
+
+  loadReviews();
 
   if (document.readyState === "complete") wire();
   else window.addEventListener("load", wire);

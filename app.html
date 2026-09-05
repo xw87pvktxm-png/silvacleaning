@@ -263,6 +263,7 @@ textarea{resize:vertical;min-height:74px}
     <button role="tab" data-tab="all"      aria-selected="false" class="mgr hidden">Full schedule</button>
     <button role="tab" data-tab="newjob"   aria-selected="false" class="mgr hidden">New job</button>
     <button role="tab" data-tab="requests" aria-selected="false" class="mgr hidden" id="tabRequests">Requests</button>
+    <button role="tab" data-tab="reviews"  aria-selected="false" class="mgr hidden" id="tabReviews">Reviews</button>
     <button role="tab" data-tab="clients"  aria-selected="false" class="mgr hidden">Clients</button>
     <button role="tab" data-tab="team"     aria-selected="false" class="mgr hidden">Team</button>
   </nav>
@@ -317,6 +318,16 @@ textarea{resize:vertical;min-height:74px}
         you can set the time and assign cleaners.
       </div>
       <div id="requestList" class="stack"></div>
+    </section>
+
+    <!-- Customer reviews from the website -->
+    <section id="panel-reviews" class="panel stack hidden">
+      <div class="note">
+        Reviews left on the website. Nothing appears publicly until you approve
+        it &mdash; approved reviews replace the sample ones on the homepage.
+        You can take a review back down at any time.
+      </div>
+      <div id="reviewList" class="stack"></div>
     </section>
 
     <!-- Clients -->
@@ -407,6 +418,7 @@ let isManager = false;
 let team = [];          // profiles (managers only)
 let clients = [];       // clients (managers only)
 let requests = [];      // website booking requests (managers only)
+let reviews  = [];      // website reviews awaiting or holding approval
 let currentTab = 'today';
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -614,7 +626,7 @@ async function start(session) {
   $('#userInitials').textContent = initials(profile.full_name || session.user.email);
   $$('.mgr').forEach(el => el.classList.toggle('hidden', !isManager));
 
-  if (isManager) { await loadTeam(); await loadClients(); await loadRequests(); }
+  if (isManager) { await loadTeam(); await loadClients(); await loadRequests(); await loadReviews(); }
   selectTab('today');
 }
 
@@ -634,6 +646,7 @@ function selectTab(tab) {
   if (tab === 'all')     renderJobs('#panel-all',   addDays(today(), -14), addDays(today(), 60));
   if (tab === 'newjob')  prepareJobForm();
   if (tab === 'requests') renderRequests();
+  if (tab === 'reviews')  renderReviews();
   if (tab === 'clients') renderClients();
   if (tab === 'team')    renderTeam();
 }
@@ -899,6 +912,87 @@ $('#jobForm').onsubmit = async e => {
   flash($('#globalMsg'), 'Job created.', 'ok');
   selectTab('week');
 };
+
+/* ---------------- manager: website reviews ---------------- */
+
+async function loadReviews() {
+  const { data, error } = await db.from('feedback')
+    .select('*').order('created_at', { ascending: false });
+  if (error) console.error(error);
+  reviews = data || [];
+  updateReviewBadge();
+}
+
+function updateReviewBadge() {
+  const btn = $('#tabReviews');
+  if (!btn) return;
+  const n = reviews.filter(r => !r.is_approved).length;
+  btn.innerHTML = 'Reviews' + (n ? ` <span class="badge">${n}</span>` : '');
+}
+
+function renderReviews() {
+  const waiting = reviews.filter(r => !r.is_approved);
+  const live    = reviews.filter(r =>  r.is_approved);
+
+  $('#reviewList').innerHTML =
+      (waiting.length
+        ? `<div class="daylabel">Waiting for you</div>` + waiting.map(reviewCard).join('')
+        : `<div class="empty"><div class="big">💬</div><p>No new reviews.</p></div>`)
+    + (live.length
+        ? `<div class="daylabel">Live on the website</div>` + live.map(reviewCard).join('')
+        : '');
+
+  $$('[data-rev]').forEach(b => b.onclick = () => reviewAction(b.dataset.rev, b.dataset.id, b));
+}
+
+function reviewCard(r) {
+  const when = new Date(r.created_at).toLocaleDateString('en-IE',
+    { day: 'numeric', month: 'short', year: 'numeric' });
+  const n = Math.max(0, Math.min(5, Number(r.rating) || 0));
+  const stars = n ? '★'.repeat(n) + '☆'.repeat(5 - n) : 'No rating';
+  return `
+  <div class="card${r.is_approved ? ' done' : ''}">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700">${esc(r.name)}</div>
+        <div style="font-size:.82rem;color:var(--muted)">${esc(when)}${r.service_type ? ' · ' + esc(r.service_type) : ''}</div>
+      </div>
+      <span class="pill ${r.is_approved ? 'completed' : 'scheduled'}">${r.is_approved ? 'on the website' : 'not published'}</span>
+    </div>
+    <div style="margin-top:8px;color:#F5A623;letter-spacing:2px">${esc(stars)}</div>
+    ${r.comment ? `<div style="margin-top:8px;font-size:.9rem;line-height:1.6">${esc(r.comment)}</div>` : ''}
+    <div class="btnrow">
+      ${r.is_approved
+        ? `<button class="btn ghost sm" data-rev="unapprove" data-id="${r.id}" style="flex:2">Take off the website</button>`
+        : `<button class="btn primary sm" data-rev="approve" data-id="${r.id}" style="flex:2">Publish on the website</button>`}
+      <button class="btn danger sm" data-rev="delete" data-id="${r.id}" style="flex:1">Delete</button>
+    </div>
+  </div>`;
+}
+
+async function reviewAction(act, id, btn) {
+  btn.disabled = true;
+
+  if (act === 'delete') {
+    const r = reviews.find(x => x.id === id);
+    if (!confirm(`Delete the review from ${r ? r.name : 'this customer'}? This cannot be undone.`)) {
+      btn.disabled = false;
+      return;
+    }
+    const { error } = await db.from('feedback').delete().eq('id', id);
+    if (error) { btn.disabled = false; return flash($('#globalMsg'), error.message); }
+  } else {
+    const { error } = await db.from('feedback')
+      .update({ is_approved: act === 'approve' }).eq('id', id);
+    if (error) { btn.disabled = false; return flash($('#globalMsg'), error.message); }
+    flash($('#globalMsg'),
+      act === 'approve' ? 'Published — it is on the website now.'
+                        : 'Taken down from the website.', 'ok');
+  }
+
+  await loadReviews();
+  renderReviews();
+}
 
 /* ---------------- manager: website booking requests ---------------- */
 
