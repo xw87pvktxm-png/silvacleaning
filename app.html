@@ -108,6 +108,18 @@ main{flex:1;padding:18px 14px 40px}
 .pill.who{background:var(--blue-light);color:var(--navy);text-transform:none;font-weight:600}
 .pill.role{background:var(--navy);color:#fff}
 .pill.new{background:var(--amber);color:#fff}
+.pill.onsite{background:var(--green);color:#fff}
+.sitestatus{padding:11px 13px;border-radius:var(--radius-sm);font-weight:600;font-size:.9rem;
+  background:var(--green-pale);color:var(--green);margin-bottom:10px}
+.sitestatus.finished{background:var(--grey-pale);color:var(--muted)}
+.paychips{display:flex;gap:8px;flex-wrap:wrap}
+.paychips input{position:absolute;opacity:0;width:1px;height:1px}
+.paychips label{flex:1;min-width:96px}
+.paychips span{display:block;text-align:center;padding:11px 8px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--border);font-weight:600;font-size:.88rem;cursor:pointer;background:#fff}
+.paychips input:checked + span{background:var(--navy);color:#fff;border-color:var(--navy)}
+.paychips input:focus-visible + span{outline:3px solid var(--blue);outline-offset:2px}
+.paynote{font-size:.78rem;color:var(--muted);margin-top:8px}
 .newbanner{display:flex;align-items:center;gap:12px;padding:13px 15px;margin-bottom:12px;
   border-radius:var(--radius-sm);background:var(--amber-pale);border:1px solid var(--amber)}
 .newbanner .grow{flex:1;min-width:0}
@@ -265,7 +277,6 @@ textarea{resize:vertical;min-height:74px}
 
   <nav class="tabs" id="tabs" role="tablist">
     <button role="tab" data-tab="today"    aria-selected="true">Today</button>
-    <button role="tab" data-tab="week"     aria-selected="false">Next 7 days</button>
     <button role="tab" data-tab="all"      aria-selected="false" class="mgr hidden">Full schedule</button>
     <button role="tab" data-tab="newjob"   aria-selected="false" class="mgr hidden">New job</button>
     <button role="tab" data-tab="requests" aria-selected="false" class="mgr hidden" id="tabRequests">Requests</button>
@@ -278,7 +289,6 @@ textarea{resize:vertical;min-height:74px}
     <div id="newBanner"></div>
     <div id="globalMsg"></div>
     <section id="panel-today"   class="panel stack"></section>
-    <section id="panel-week"    class="panel stack hidden"></section>
     <section id="panel-all"     class="panel stack hidden"></section>
 
     <!-- New job -->
@@ -418,7 +428,8 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const JOB_SELECT =
   '*, clients(id,name,phone,email,address,eircode,notes),' +
-  ' job_assignments(cleaner_id, assigned_at, profiles(id,full_name,phone))';
+  ' job_assignments(cleaner_id, assigned_at, checked_in_at, checked_out_at,' +
+  ' profiles(id,full_name,phone))';
 
 let me = null;          // my profile row
 let isManager = false;
@@ -458,6 +469,23 @@ function prettyDur(mins) {
   if (!h) return `${m}m`;
   return m ? `${h}h${pad(m)}` : `${h}h`;
 }
+
+/* My own row on a job: who signed in, and when. */
+const myAssignment = j => (j.job_assignments || []).find(a => a.cleaner_id === me?.id);
+
+const clockTime = ts => ts
+  ? new Date(ts).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' })
+  : '';
+
+/* How long someone was actually in the house, from the two stamps. */
+function workedFor(inAt, outAt) {
+  if (!inAt || !outAt) return '';
+  const mins = Math.max(0, Math.round((new Date(outAt) - new Date(inAt)) / 60000));
+  return prettyDur(mins);
+}
+
+const PAY_LABEL = { cash: 'Cash', transfer: 'Transfer', unpaid: 'Not paid yet' };
+const euros = c => (c / 100).toFixed(2);
 
 function endTime(start, mins) {
   const [h, m] = start.split(':').map(Number);
@@ -651,7 +679,6 @@ function selectTab(tab) {
   $$('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
   $$('main > .panel').forEach(p => p.classList.toggle('hidden', p.id !== 'panel-' + tab));
   if (tab === 'today')   renderJobs('#panel-today', today(), today());
-  if (tab === 'week')    renderJobs('#panel-week',  today(), addDays(today(), 6));
   if (tab === 'all')     renderJobs('#panel-all',   addDays(today(), -14), addDays(today(), 60));
   if (tab === 'newjob')  prepareJobForm();
   if (tab === 'requests') renderRequests();
@@ -764,6 +791,9 @@ function jobCard(j) {
       <span class="client">${esc(j.clients?.name || 'Client')}</span>
       <span class="addr">${esc(jobAddress(j))}</span>
       <span class="meta">
+        ${(() => { const a = myAssignment(j);
+             return a && a.checked_in_at && !a.checked_out_at
+               ? '<span class="pill onsite">on site</span>' : ''; })()}
         ${isNewToMe(j) ? '<span class="pill new">New</span>' : ''}
         <span class="pill ${j.status}">${esc(j.status.replace('_', ' '))}</span>
         <span class="pill svc">${esc(j.service_type)}</span>
@@ -784,7 +814,6 @@ function closeSheet() { sheet.classList.add('hidden'); }
 function openJob(j) {
   if (!j) return;
   const addr = jobAddress(j);
-  const crew = (j.job_assignments || []).map(a => a.profiles?.full_name).filter(Boolean);
   const c = j.clients || {};
 
   $('#sheetBody').innerHTML = `
@@ -802,10 +831,11 @@ function openJob(j) {
       <a href="${esc(mapsUrl(addr + ' ' + (c.eircode || '')))}" target="_blank" rel="noopener">Open in Maps →</a></span></div>
     ${c.phone ? `<div class="detail"><span class="k">Client</span>
       <span class="v"><a href="tel:${esc(c.phone.replace(/\s/g, ''))}">${esc(c.phone)}</a></span></div>` : ''}
-    ${crew.length ? `<div class="detail"><span class="k">Crew</span><span class="v">${esc(crew.join(', '))}</span></div>` : ''}
+    ${crewRows(j)}
     ${j.notes ? `<div class="detail"><span class="k">Notes</span><span class="v">${esc(j.notes)}</span></div>` : ''}
     ${c.notes ? `<div class="detail"><span class="k">Client notes</span><span class="v">${esc(c.notes)}</span></div>` : ''}
-    ${j.price_cents != null ? `<div class="detail"><span class="k">Price</span><span class="v">€${(j.price_cents / 100).toFixed(2)}</span></div>` : ''}
+    ${j.price_cents != null ? `<div class="detail"><span class="k">Price</span><span class="v">€${euros(j.price_cents)}</span></div>` : ''}
+    ${j.payment_method ? `<div class="detail"><span class="k">Paid</span><span class="v">${esc(PAY_LABEL[j.payment_method] || j.payment_method)}${j.payment_amount_cents != null ? ' · €' + euros(j.payment_amount_cents) : ''}</span></div>` : ''}
     ${j.completion_notes ? `<div class="detail"><span class="k">Report</span><span class="v">${esc(j.completion_notes)}</span></div>` : ''}
 
     <div id="sheetActions" style="margin-top:18px"></div>
@@ -815,6 +845,63 @@ function openJob(j) {
   sheet.classList.remove('hidden');
 }
 
+/* Who was in the house and for how long. Managers see the whole crew; a
+   cleaner sees the same, which keeps everyone honest without a separate view. */
+function crewRows(j) {
+  const list = j.job_assignments || [];
+  if (!list.length) return '';
+  const rows = list.map(a => {
+    const who = esc(a.profiles?.full_name || 'Cleaner');
+    if (a.checked_out_at) {
+      return `${who} — ${esc(clockTime(a.checked_in_at))}–${esc(clockTime(a.checked_out_at))}` +
+             ` <span style="color:var(--muted)">(${esc(workedFor(a.checked_in_at, a.checked_out_at))})</span>`;
+    }
+    if (a.checked_in_at) {
+      return `${who} — <strong style="color:var(--green)">on site since ${esc(clockTime(a.checked_in_at))}</strong>`;
+    }
+    return `${who} <span style="color:var(--muted)">— not signed in</span>`;
+  });
+  return `<div class="detail"><span class="k">Crew</span><span class="v">${rows.join('<br>')}</span></div>`;
+}
+
+/* The one thing a cleaner does at the door. Times come from the server, so
+   this is a record of when she was actually there, not what the phone says. */
+function signInBlock(j) {
+  const mine = myAssignment(j);
+  if (!mine) return '';
+  if (!mine.checked_in_at) {
+    return `<button class="btn primary" data-act="signin">I have arrived — sign in</button>`;
+  }
+  if (!mine.checked_out_at) {
+    return `<div class="sitestatus">On site since ${esc(clockTime(mine.checked_in_at))}</div>
+            <button class="btn done" data-act="signout">Finished — sign out</button>`;
+  }
+  return `<div class="sitestatus finished">Signed in ${esc(clockTime(mine.checked_in_at))}, out ${esc(clockTime(mine.checked_out_at))}
+          · ${esc(workedFor(mine.checked_in_at, mine.checked_out_at))}</div>`;
+}
+
+function paymentBlock(j) {
+  if (!isManager && !myAssignment(j)) return '';
+  const m = j.payment_method;
+  const amount = j.payment_amount_cents != null ? euros(j.payment_amount_cents)
+               : (j.price_cents != null ? euros(j.price_cents) : '');
+  return `
+    <div class="field" style="margin-top:18px">
+      <label>How did the client pay?</label>
+      <div class="paychips" id="payMethod">
+        ${['cash', 'transfer', 'unpaid'].map(v => `
+          <label><input type="radio" name="pay" value="${v}"${m === v ? ' checked' : ''}><span>${PAY_LABEL[v]}</span></label>`).join('')}
+      </div>
+    </div>
+    <div class="field">
+      <label for="payAmount">Amount received (€)</label>
+      <input id="payAmount" type="number" min="0" step="0.01" inputmode="decimal"
+             value="${esc(amount)}" placeholder="80.00">
+    </div>
+    <button class="btn ghost" data-act="savepay">Save payment</button>
+    ${j.payment_recorded_at ? `<p class="paynote">Last saved ${esc(clockTime(j.payment_recorded_at))}</p>` : ''}`;
+}
+
 function renderActions(j) {
   const box = $('#sheetActions');
   const done = j.status === 'completed';
@@ -822,9 +909,8 @@ function renderActions(j) {
   let html = '';
 
   if (!done && !cancelled) {
-    if (j.status === 'scheduled') {
-      html += `<button class="btn ghost" data-act="start">I'm on site</button>`;
-    }
+    html += signInBlock(j);
+    html += paymentBlock(j);
     html += `
       <div class="field" style="margin-top:12px">
         <label for="doneNotes">Anything to report? (optional)</label>
@@ -865,8 +951,31 @@ async function jobAction(act, j, btn) {
   btn.textContent = 'Saving…';
 
   try {
-    if (act === 'start') {
-      await update(j.id, { status: 'in_progress' });
+    if (act === 'signin') {
+      if (!myAssignment(j)) throw new Error('You are not on this job.');
+      // The value sent here is ignored; the database stamps the real time.
+      const { error } = await db.from('job_assignments')
+        .update({ checked_in_at: new Date().toISOString() })
+        .eq('job_id', j.id).eq('cleaner_id', me.id);
+      if (error) throw error;
+      if (j.status === 'scheduled') await update(j.id, { status: 'in_progress' });
+    }
+    else if (act === 'signout') {
+      const { error } = await db.from('job_assignments')
+        .update({ checked_out_at: new Date().toISOString() })
+        .eq('job_id', j.id).eq('cleaner_id', me.id);
+      if (error) throw error;
+    }
+    else if (act === 'savepay') {
+      const picked = $('#payMethod input:checked');
+      const raw = ($('#payAmount')?.value || '').trim();
+      if (!picked && !raw) throw new Error('Pick how they paid, or put in an amount.');
+      if (raw !== '' && !(Number(raw) >= 0)) throw new Error('That amount does not look right.');
+      const { error } = await db.from('jobs').update({
+        payment_method: picked ? picked.value : null,
+        payment_amount_cents: raw === '' ? null : Math.round(Number(raw) * 100)
+      }).eq('id', j.id);
+      if (error) throw error;
     }
     else if (act === 'complete') {
       const notes = ($('#doneNotes')?.value || '').trim();
@@ -908,6 +1017,15 @@ async function jobAction(act, j, btn) {
           .insert(added.map(id => ({ job_id: j.id, cleaner_id: id })));
         if (insErr) throw insErr;
       }
+    }
+    if (act === 'signin' || act === 'signout' || act === 'savepay') {
+      selectTab(currentTab);                       // repaint the card behind
+      const { data: fresh } = await db.from('jobs')
+        .select(JOB_SELECT).eq('id', j.id).maybeSingle();
+      if (fresh) openJob(fresh);
+      return flash($('#sheetMsg'),
+        act === 'signin'  ? 'Signed in. Have a good one.' :
+        act === 'signout' ? 'Signed out — thanks!' : 'Payment saved.', 'ok');
     }
     closeSheet();
     selectTab(currentTab);
