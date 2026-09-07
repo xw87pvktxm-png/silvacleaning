@@ -89,7 +89,7 @@ main{flex:1;padding:18px 14px 40px}
   background:var(--blue-pale);color:var(--navy)
 }
 .time .hh{display:block;font-weight:700;font-size:1.02rem;line-height:1.1}
-.time .dur{display:block;font-size:.68rem;color:var(--muted);margin-top:2px}
+.time .dur{display:block;font-size:.8rem;font-weight:800;color:var(--amber);margin-top:3px}
 .job .body{flex:1;min-width:0}
 .job .client{font-weight:700;font-size:1rem;margin-bottom:2px}
 .job .addr{font-size:.85rem;color:var(--muted);line-height:1.35;
@@ -120,6 +120,23 @@ main{flex:1;padding:18px 14px 40px}
 .paychips input:checked + span{background:var(--navy);color:#fff;border-color:var(--navy)}
 .paychips input:focus-visible + span{outline:3px solid var(--blue);outline-offset:2px}
 .paynote{font-size:.78rem;color:var(--muted);margin-top:8px}
+.pill.late{background:var(--red);color:#fff}
+.latewarn{display:flex;gap:10px;padding:13px 15px;margin-bottom:12px;border-radius:var(--radius-sm);
+  background:var(--red-pale);border:1px solid var(--red);color:var(--red);font-weight:600;font-size:.9rem}
+.weeknav{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.weeknav .grow{flex:1;text-align:center;font-weight:700;color:var(--navy);font-size:.95rem}
+.stat{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.stat:last-child{border-bottom:0}
+.stat .k{color:var(--muted);font-size:.85rem}
+.stat .v{font-weight:700;color:var(--navy);font-size:.95rem}
+.bigstat{display:flex;gap:10px;margin-bottom:14px}
+.bigstat>div{flex:1;background:var(--blue-pale);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.bigstat .n{font-size:1.35rem;font-weight:800;color:var(--navy);line-height:1.2}
+.bigstat .l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.shots{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.shots a{display:block;width:74px;height:74px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.shots img{width:100%;height:100%;object-fit:cover;display:block}
+.shotnote{font-size:.78rem;color:var(--muted);margin-top:8px}
 .newbanner{display:flex;align-items:center;gap:12px;padding:13px 15px;margin-bottom:12px;
   border-radius:var(--radius-sm);background:var(--amber-pale);border:1px solid var(--amber)}
 .newbanner .grow{flex:1;min-width:0}
@@ -212,7 +229,69 @@ textarea{resize:vertical;min-height:74px}
   .sheet{align-items:center}
   .sheet .sheetcard{border-radius:var(--radius);max-height:88vh;margin:0 18px}
 }
-</style>
+
+/* ---------- today: one job at a time (focus) and the day as a route ---------- */
+.todaybar{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.todaybar .pos{font-size:.78rem;color:var(--muted);font-weight:600;margin-left:auto}
+.modebtn{
+  background:var(--blue-pale);color:var(--navy);border-radius:99px;
+  padding:9px 15px;font-weight:700;font-size:.84rem;
+  display:inline-flex;align-items:center;gap:7px;transition:.15s}
+.modebtn:hover{background:var(--blue-light)}
+
+.focus{border-top:5px solid var(--blue);padding:20px 18px}
+.focus.live{border-top-color:var(--green)}
+.focus.shut{border-top-color:var(--grey-pale)}
+.fstate{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+.focus.live .fstate{color:var(--green)}
+.focus.shut .fstate{color:var(--muted)}
+.fname{font-family:'Playfair Display',serif;font-size:1.55rem;line-height:1.14;
+  color:var(--navy);margin:7px 0 5px}
+.faddr{font-size:.9rem;color:var(--muted);line-height:1.4}
+.fclock{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 2px}
+.fchip{background:var(--blue-pale);color:var(--navy);border-radius:var(--radius-sm);
+  padding:8px 12px;font-weight:800;font-size:1rem;line-height:1.2;flex:1;min-width:120px}
+.fchip small{display:block;font-size:.66rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
+.fchip.hours{background:var(--amber-pale);color:var(--amber)}
+.fchip.hours small{color:var(--amber);opacity:.8}
+.fnote{margin-top:12px;font-size:.87rem;line-height:1.5;color:var(--text);
+  background:var(--grey-pale);border-radius:var(--radius-sm);padding:11px 13px}
+.focus .btn{margin-top:12px}
+.focus .btn.big{padding:18px;font-size:1.05rem;border-radius:var(--radius-sm)}
+.focus .maps{display:inline-block;margin-top:12px;font-weight:700;font-size:.9rem}
+
+.upnextlab{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);margin:20px 2px 2px}
+.nextrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:13px 15px;transition:.15s}
+.nextrow:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.nextrow .hh{font-weight:800;color:var(--navy);font-size:.95rem;min-width:52px}
+.nextrow .who{flex:1;min-width:0}
+.nextrow .who b{display:block;font-size:.95rem;line-height:1.25}
+.nextrow .who span{font-size:.8rem;color:var(--muted)}
+.nextrow .hrs{background:var(--amber-pale);color:var(--amber);border-radius:99px;
+  padding:4px 10px;font-size:.78rem;font-weight:800;white-space:nowrap}
+.nextrow.done{opacity:.6}
+
+/* the day, in the order it is driven */
+.arealab{display:flex;align-items:center;gap:9px;margin:20px 2px 2px;
+  font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)}
+.arealab::after{content:"";flex:1;height:1px;background:var(--border)}
+.arealab:first-child{margin-top:0}
+.gapline{display:flex;align-items:center;gap:8px;padding:3px 2px 3px 8px;
+  font-size:.78rem;color:var(--muted)}
+.gapline .arrow{color:var(--blue);font-weight:800;font-size:.9rem}
+.gapline.wait{color:var(--amber)}
+.gapline.wait .arrow{color:var(--amber)}
+.daytotal{font-size:.82rem;color:var(--muted);margin:2px 2px 10px}
+
+@keyframes zoomin{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.zoomin{animation:zoomin .22s cubic-bezier(.2,.8,.3,1)}
+.fadeup{animation:fadeup .2s ease-out}
+@media (prefers-reduced-motion:reduce){.zoomin,.fadeup{animation:none}}
+  </style>
 </head>
 <body>
 
@@ -279,6 +358,7 @@ textarea{resize:vertical;min-height:74px}
     <button role="tab" data-tab="today"    aria-selected="true">Today</button>
     <button role="tab" data-tab="all"      aria-selected="false" class="mgr hidden">Full schedule</button>
     <button role="tab" data-tab="newjob"   aria-selected="false" class="mgr hidden">New job</button>
+    <button role="tab" data-tab="summary"  aria-selected="false" class="mgr hidden">This week</button>
     <button role="tab" data-tab="requests" aria-selected="false" class="mgr hidden" id="tabRequests">Requests</button>
     <button role="tab" data-tab="reviews"  aria-selected="false" class="mgr hidden" id="tabReviews">Reviews</button>
     <button role="tab" data-tab="clients"  aria-selected="false" class="mgr hidden">Clients</button>
@@ -317,6 +397,17 @@ textarea{resize:vertical;min-height:74px}
           <div class="field"><label for="jPrice">Price (€, optional)</label>
             <input id="jPrice" type="number" min="0" step="1" placeholder="80"></div>
         </div>
+        <div class="row2">
+          <div class="field"><label for="jRepeat">Repeats</label>
+            <select id="jRepeat">
+              <option value="">Just this once</option>
+              <option value="7">Every week</option>
+              <option value="14">Every 2 weeks</option>
+              <option value="28">Every 4 weeks</option>
+            </select></div>
+          <div class="field hidden" id="jCountField"><label for="jCount">How many visits</label>
+            <input id="jCount" type="number" min="2" max="52" value="13"></div>
+        </div>
         <div class="field"><label>Assign cleaners</label>
           <div class="checklist" id="jCleaners"></div></div>
         <div class="field"><label for="jAddr">Address override (optional)</label>
@@ -325,6 +416,16 @@ textarea{resize:vertical;min-height:74px}
           <textarea id="jNotes" placeholder="Key in the lockbox, dog in the garden, park on the street…"></textarea></div>
         <button class="btn primary" type="submit">Create job</button>
       </form>
+    </section>
+
+    <!-- Hours worked and money taken, one week at a time -->
+    <section id="panel-summary" class="panel stack hidden">
+      <div class="weeknav">
+        <button class="btn ghost sm" id="wkPrev" aria-label="Previous week">←</button>
+        <div class="grow" id="wkLabel"></div>
+        <button class="btn ghost sm" id="wkNext" aria-label="Next week">→</button>
+      </div>
+      <div id="summaryBody"></div>
     </section>
 
     <!-- Booking requests from the website -->
@@ -357,10 +458,13 @@ textarea{resize:vertical;min-height:74px}
           <input id="cAddr" type="text" required></div>
         <div class="row2">
           <div class="field"><label for="cEir">Eircode</label>
-            <input id="cEir" type="text" placeholder="D02 XY45"></div>
+            <input id="cEir" type="text" placeholder="H91 AB12"></div>
           <div class="field"><label for="cPhone">Phone</label>
             <input id="cPhone" type="tel"></div>
         </div>
+        <div class="field"><label for="cArea">Area</label>
+          <input id="cArea" type="text" list="areaList" placeholder="Corrandulla, Salthill, Oranmore…">
+          <datalist id="areaList"></datalist></div>
         <div class="field"><label for="cEmail">Email</label>
           <input id="cEmail" type="email"></div>
         <div class="field"><label for="cNotes">Notes</label>
@@ -427,7 +531,7 @@ const SUPABASE_KEY = 'sb_publishable_wNh5jRVLIczoAeTOBXA97A_0loighH4';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const JOB_SELECT =
-  '*, clients(id,name,phone,email,address,eircode,notes),' +
+  '*, clients(id,name,phone,email,address,eircode,area,notes),' +
   ' job_assignments(cleaner_id, assigned_at, checked_in_at, checked_out_at,' +
   ' profiles(id,full_name,phone))';
 
@@ -439,6 +543,9 @@ let requests = [];      // website booking requests (managers only)
 let reviews  = [];      // website reviews awaiting or holding approval
 let newAssignments = []; // jobs put on my plate since I last looked
 let currentTab = 'today';
+let todayJobs = [];      // today's jobs, in time order
+let todayMode = 'now';   // 'now' = one job filling the screen, 'day' = the whole route
+let focusJobId = null;   // a job she tapped in the day view, so it stays on screen
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -484,6 +591,16 @@ function workedFor(inAt, outAt) {
   return prettyDur(mins);
 }
 
+/* Start time gone, nobody signed in, job still sitting as scheduled. Fifteen
+   minutes of grace so ordinary lateness is not shouted about. */
+function isLate(j) {
+  if (j.status !== 'scheduled') return false;
+  if ((j.job_assignments || []).some(a => a.checked_in_at)) return false;
+  const due = new Date(`${j.scheduled_date}T${j.start_time || '00:00:00'}`);
+  if (isNaN(due)) return false;
+  return Date.now() > due.getTime() + 15 * 60000;
+}
+
 const PAY_LABEL = { cash: 'Cash', transfer: 'Transfer', unpaid: 'Not paid yet' };
 const euros = c => (c / 100).toFixed(2);
 
@@ -500,6 +617,17 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g,
   c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
 const jobAddress = j => j.address_override || j.clients?.address || '';
+
+/* Most clients have no street address, so their Eircode is stored as the
+   address too — that is what makes the Maps link work from a tap. Printing
+   both then showed it twice, so only add it when it is not already there. */
+const addrLine = (address, eircode) => {
+  const a = String(address || '').trim();
+  const e = String(eircode || '').trim();
+  if (!e) return a;
+  if (!a) return e;
+  return a.toUpperCase().includes(e.toUpperCase()) ? a : a + ' · ' + e;
+};
 const mapsUrl = a => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a);
 
 function flash(el, text, kind = 'err') {
@@ -678,9 +806,10 @@ function selectTab(tab) {
   currentTab = tab;
   $$('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
   $$('main > .panel').forEach(p => p.classList.toggle('hidden', p.id !== 'panel-' + tab));
-  if (tab === 'today')   renderJobs('#panel-today', today(), today());
+  if (tab === 'today')   renderToday();
   if (tab === 'all')     renderJobs('#panel-all',   addDays(today(), -14), addDays(today(), 60));
   if (tab === 'newjob')  prepareJobForm();
+  if (tab === 'summary')  renderSummary();
   if (tab === 'requests') renderRequests();
   if (tab === 'reviews')  renderReviews();
   if (tab === 'clients') renderClients();
@@ -767,7 +896,12 @@ async function renderJobs(sel, from, to) {
   const byDay = {};
   jobs.forEach(j => (byDay[j.scheduled_date] ||= []).push(j));
 
-  box.innerHTML = Object.entries(byDay).map(([day, list]) => `
+  const late = jobs.filter(isLate);
+  const warn = late.length ? `<div class="latewarn">
+      <span>⚠</span><span>${late.length} job${late.length === 1 ? '' : 's'} should have started and nobody has signed in yet.</span>
+    </div>` : '';
+
+  box.innerHTML = warn + Object.entries(byDay).map(([day, list]) => `
     <div class="daylabel${day === today() ? ' today' : ''}">${esc(prettyDate(day))}</div>
     ${list.map(jobCard).join('')}
   `).join('');
@@ -775,6 +909,171 @@ async function renderJobs(sel, from, to) {
   $$('.job', box).forEach(el => {
     el.onclick = () => openJob(jobs.find(j => j.id === el.dataset.id));
   });
+}
+
+/* ---------------- today: one job at a time ----------------
+   A cleaner standing at a door wants one thing on the screen and one button on
+   it, so Today shows the house she is in — or the next one — filling the
+   screen, and shrinks the rest of the day to a strip. "Whole day" swings out
+   to the route: the day grouped by area in the order it is actually driven.
+   Tapping any job there zooms straight back in on that job. */
+
+async function renderToday() {
+  const box = $('#panel-today');
+  box.innerHTML = '<div class="empty"><p>Loading…</p></div>';
+  todayJobs = await fetchJobs(today(), today());
+  paintToday();
+}
+
+const isOpenJob = j => j.status !== 'completed' && j.status !== 'cancelled';
+const areaOf = j => (j.clients?.area || '').trim() || 'Galway';
+
+/* Whatever she tapped, else the house she is standing in, else the next one. */
+function currentJob() {
+  if (focusJobId) {
+    const picked = todayJobs.find(j => j.id === focusJobId);
+    if (picked) return picked;
+  }
+  const onSite = todayJobs.find(j => {
+    const a = myAssignment(j);
+    return a && a.checked_in_at && !a.checked_out_at;
+  });
+  if (onSite) return onSite;
+  return todayJobs.find(isOpenJob) || todayJobs[todayJobs.length - 1] || null;
+}
+
+function paintToday() {
+  const box = $('#panel-today');
+  if (!todayJobs.length) {
+    box.innerHTML = `<div class="empty"><div class="big">🧹</div>
+      <p>Nothing scheduled for today.<br>Enjoy the quiet one.</p></div>`;
+    return;
+  }
+  const late = todayJobs.filter(isLate);
+  const warn = late.length ? `<div class="latewarn">
+      <span>⚠</span><span>${late.length} job${late.length === 1 ? '' : 's'} should have started and nobody has signed in yet.</span>
+    </div>` : '';
+  box.innerHTML = warn + (todayMode === 'day' ? dayView() : focusView());
+  wireToday();
+}
+
+function focusView() {
+  const j = currentJob();
+  if (!j) return '';
+  const c    = j.clients || {};
+  const mine = myAssignment(j);
+  const done = j.status === 'completed';
+  const off  = j.status === 'cancelled';
+  const live = !!(mine && mine.checked_in_at && !mine.checked_out_at);
+  const out  = !!(mine && mine.checked_out_at);
+  const addr = jobAddress(j);
+
+  const state = off  ? 'Cancelled'
+              : done ? 'Finished'
+              : live ? `On site since ${clockTime(mine.checked_in_at)}`
+              : todayJobs.indexOf(j) === 0 ? 'First today' : 'Up next';
+
+  let action = '';
+  if (!done && !off && mine) {
+    if (!mine.checked_in_at) {
+      action = `<button class="btn primary big" data-act="signin">I have arrived — sign in</button>`;
+    } else if (!mine.checked_out_at) {
+      action = `<button class="btn done big" data-act="signout">Finished — sign out</button>`;
+    }
+  }
+  if (!done && !off && out) {
+    action += j.payment_method
+      ? `<div class="fnote">Paid: ${esc(PAY_LABEL[j.payment_method] || j.payment_method)}${
+           j.payment_amount_cents != null ? ' · €' + euros(j.payment_amount_cents) : ''}</div>`
+      : `<button class="btn ghost" data-open>Put in what she paid</button>`;
+    action += `<button class="btn done big" data-act="complete">Mark as complete</button>`;
+  }
+
+  const extras = [j.notes, c.notes].filter(Boolean).map(esc).join('<br>');
+
+  return `
+  <div class="todaybar">
+    <button class="modebtn" data-mode="day">☰ Whole day</button>
+    <span class="pos">Job ${todayJobs.indexOf(j) + 1} of ${todayJobs.length}</span>
+  </div>
+  <div class="card focus zoomin${live ? ' live' : ''}${done || off ? ' shut' : ''}">
+    <div class="fstate">${esc(state)}</div>
+    <div class="fname">${esc(c.name || 'Job')}</div>
+    <div class="faddr">${esc(addrLine(addr, c.eircode))} · ${esc(areaOf(j))}</div>
+    <div class="fclock">
+      <span class="fchip"><small>Time</small>${esc(prettyTime(j.start_time))}–${esc(endTime(j.start_time, j.duration_minutes))}</span>
+      <span class="fchip hours"><small>Should take</small>${esc(prettyDur(j.duration_minutes))}</span>
+    </div>
+    ${extras ? `<div class="fnote">${extras}</div>` : ''}
+    <div id="focusMsg"></div>
+    ${action}
+    ${addr ? `<a class="maps" href="${esc(mapsUrl(addr + ' ' + (c.eircode || '')))}" target="_blank" rel="noopener">Open in Maps →</a>` : ''}
+    <button class="btn ghost" data-open>All the details</button>
+  </div>
+  ${laterToday(j)}`;
+}
+
+function laterToday(shown) {
+  const rest = todayJobs.filter(j => j.id !== shown.id);
+  if (!rest.length) return '';
+  return `<div class="upnextlab">The rest of today</div>
+    <div class="stack">${rest.map(j => `
+      <button class="card nextrow${j.status === 'completed' ? ' done' : ''}" data-zoom="${j.id}">
+        <span class="hh">${esc(prettyTime(j.start_time))}</span>
+        <span class="who">
+          <b>${esc(j.clients?.name || 'Client')}</b>
+          <span>${esc(areaOf(j))}${j.clients?.eircode ? ' · ' + esc(j.clients.eircode) : ''}</span>
+        </span>
+        <span class="hrs">${esc(prettyDur(j.duration_minutes))}</span>
+      </button>`).join('')}</div>`;
+}
+
+/* The day as it is driven: area by area, with the empty time between houses
+   shown for what it is. No drive times — the app does not know them yet, and a
+   made-up number is worse than none. */
+function dayView() {
+  const counted = todayJobs.filter(j => j.status !== 'cancelled');
+  const mins = counted.reduce((t, j) => t + (j.duration_minutes || 0), 0);
+
+  let html = `
+  <div class="todaybar">
+    <button class="modebtn" data-mode="now">← Back to the job</button>
+    <span class="pos">${esc(prettyDate(today()))}</span>
+  </div>
+  <div class="daytotal">${counted.length} job${counted.length === 1 ? '' : 's'} · ${esc(prettyDur(mins) || '0m')} of cleaning</div>`;
+
+  let lastArea = null, prevEnd = null;
+  todayJobs.forEach(j => {
+    const area = areaOf(j);
+    const changed = area !== lastArea;
+
+    if (prevEnd !== null && j.start_time) {
+      const gap = toMins(j.start_time) - prevEnd;
+      const label = gap <= 5 ? 'straight on'
+                  : `${prettyDur(gap)} before ${changed ? esc(area) : 'the next one'}`;
+      html += `<div class="gapline${gap >= 60 ? ' wait' : ''}"><span class="arrow">↓</span>${label}</div>`;
+    }
+    if (changed) { html += `<div class="arealab">${esc(area)}</div>`; lastArea = area; }
+    html += jobCard(j);
+    if (j.start_time) prevEnd = toMins(j.start_time) + (j.duration_minutes || 0);
+  });
+  return html;
+}
+
+const toMins = t => { const [h, m] = String(t).split(':').map(Number); return h * 60 + m; };
+
+function wireToday() {
+  const box = $('#panel-today');
+  $$('[data-mode]', box).forEach(b => b.onclick = () => { todayMode = b.dataset.mode; paintToday(); });
+  $$('[data-zoom]', box).forEach(b => b.onclick = () => {
+    focusJobId = b.dataset.zoom; todayMode = 'now'; paintToday();
+  });
+  $$('.job', box).forEach(el => el.onclick = () => {
+    focusJobId = el.dataset.id; todayMode = 'now'; paintToday();
+  });
+  $$('[data-open]', box).forEach(b => b.onclick = () => openJob(currentJob()));
+  $$('.focus [data-act]', box).forEach(b =>
+    b.onclick = () => jobAction(b.dataset.act, currentJob(), b, 'focus'));
 }
 
 function jobCard(j) {
@@ -794,6 +1093,7 @@ function jobCard(j) {
         ${(() => { const a = myAssignment(j);
              return a && a.checked_in_at && !a.checked_out_at
                ? '<span class="pill onsite">on site</span>' : ''; })()}
+        ${isLate(j) ? '<span class="pill late">not started</span>' : ''}
         ${isNewToMe(j) ? '<span class="pill new">New</span>' : ''}
         <span class="pill ${j.status}">${esc(j.status.replace('_', ' '))}</span>
         <span class="pill svc">${esc(j.service_type)}</span>
@@ -802,6 +1102,68 @@ function jobCard(j) {
       </span>
     </span>
   </button>`;
+}
+
+/* ---------------- photos ----------------
+   Phone photos are 3-5 MB each and the free storage tier is 1 GB, so every
+   image is redrawn to at most 1600px and re-encoded as JPEG before it leaves
+   the phone. That is roughly 200 KB: kinder to a cleaner's data allowance and
+   it keeps months of photos inside the allowance. */
+
+function shrink(file, max = 1600, quality = 0.7) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width  = Math.max(1, Math.round(img.width  * scale));
+      c.height = Math.max(1, Math.round(img.height * scale));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? resolve(b) : reject(new Error('Could not read that image')),
+               'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('That file is not an image')); };
+    img.src = url;
+  });
+}
+
+async function loadPhotos(j) {
+  const box = $('#shots');
+  if (!box) return;
+  const { data, error } = await db.from('job_photos')
+    .select('storage_path').eq('job_id', j.id).order('created_at');
+  if (error || !data || !data.length) { box.innerHTML = ''; return; }
+  // The bucket is private, so each thumbnail needs a short-lived signed link.
+  const { data: signed } = await db.storage.from('job-photos')
+    .createSignedUrls(data.map(r => r.storage_path), 3600);
+  box.innerHTML = (signed || []).filter(x => x && x.signedUrl).map(x =>
+    `<a href="${esc(x.signedUrl)}" target="_blank" rel="noopener">
+       <img src="${esc(x.signedUrl)}" alt="Photo of the finished job"></a>`).join('');
+}
+
+async function uploadPhotos(j, files) {
+  const note = $('#shotNote');
+  const list = [...files].slice(0, 8);
+  for (let i = 0; i < list.length; i++) {
+    if (note) note.textContent = `Sending photo ${i + 1} of ${list.length}…`;
+    try {
+      const blob = await shrink(list[i]);
+      const path = `${j.id}/${crypto.randomUUID()}.jpg`;
+      const { error: upErr } = await db.storage.from('job-photos')
+        .upload(path, blob, { contentType: 'image/jpeg' });
+      if (upErr) throw upErr;
+      const { error: rowErr } = await db.from('job_photos')
+        .insert({ job_id: j.id, storage_path: path });
+      if (rowErr) throw rowErr;
+    } catch (err) {
+      if (note) note.textContent = err.message || 'That photo would not send.';
+      return;
+    }
+  }
+  if (note) note.textContent = 'Saved.';
+  await loadPhotos(j);
 }
 
 /* ---------------- job detail sheet ---------------- */
@@ -827,7 +1189,7 @@ function openJob(j) {
       <span class="v"><span class="pill ${j.status}">${esc(j.status.replace('_', ' '))}</span></span></div>
     <div class="detail"><span class="k">Service</span><span class="v">${esc(j.service_type)}</span></div>
     <div class="detail"><span class="k">Address</span>
-      <span class="v">${esc(addr)}${c.eircode ? ' · ' + esc(c.eircode) : ''}<br>
+      <span class="v">${esc(addrLine(addr, c.eircode))}<br>
       <a href="${esc(mapsUrl(addr + ' ' + (c.eircode || '')))}" target="_blank" rel="noopener">Open in Maps →</a></span></div>
     ${c.phone ? `<div class="detail"><span class="k">Client</span>
       <span class="v"><a href="tel:${esc(c.phone.replace(/\s/g, ''))}">${esc(c.phone)}</a></span></div>` : ''}
@@ -842,6 +1204,13 @@ function openJob(j) {
   `;
 
   renderActions(j);
+
+  const shotInput = $('#shotInput');
+  if (shotInput) {
+    shotInput.onchange = () => uploadPhotos(j, shotInput.files);
+    loadPhotos(j);
+  }
+
   sheet.classList.remove('hidden');
 }
 
@@ -880,6 +1249,27 @@ function signInBlock(j) {
           · ${esc(workedFor(mine.checked_in_at, mine.checked_out_at))}</div>`;
 }
 
+function seriesBlock(j) {
+  if (!j.recurrence_group_id) return '';
+  const line = `<div class="note" style="margin-top:16px">One visit in a repeating
+    series — ${esc(j.recurrence_rule || 'repeats')}. Changing this one leaves the rest alone.</div>`;
+  if (!isManager) return line;
+  return line + `<button class="btn ghost sm" data-act="cancelseries" style="margin-top:10px">
+    Cancel this visit and all later ones</button>`;
+}
+
+function photoBlock(j) {
+  if (!isManager && !myAssignment(j)) return '';
+  return `
+    <div class="field" style="margin-top:18px">
+      <label for="shotInput">Photos of the finished job</label>
+      <input id="shotInput" type="file" accept="image/*" multiple>
+      <div class="shots" id="shots"></div>
+      <p class="shotnote" id="shotNote">Up to 8 per job. They are shrunk on your
+        phone before sending, so they will not eat your data.</p>
+    </div>`;
+}
+
 function paymentBlock(j) {
   if (!isManager && !myAssignment(j)) return '';
   const m = j.payment_method;
@@ -911,6 +1301,7 @@ function renderActions(j) {
   if (!done && !cancelled) {
     html += signInBlock(j);
     html += paymentBlock(j);
+    html += photoBlock(j);
     html += `
       <div class="field" style="margin-top:12px">
         <label for="doneNotes">Anything to report? (optional)</label>
@@ -940,12 +1331,14 @@ function renderActions(j) {
     <button class="btn ghost" data-act="reassign">Save assignments</button>`;
   }
 
+  html += seriesBlock(j);
+
   box.innerHTML = html;
   $$('[data-act]', box).forEach(b => b.onclick = () => jobAction(b.dataset.act, j, b));
 }
 
-async function jobAction(act, j, btn) {
-  const msg = $('#sheetMsg');
+async function jobAction(act, j, btn, ctx = 'sheet') {
+  const msg = $(ctx === 'focus' ? '#focusMsg' : '#sheetMsg');
   btn.disabled = true;
   const original = btn.textContent;
   btn.textContent = 'Saving…';
@@ -979,6 +1372,7 @@ async function jobAction(act, j, btn) {
     }
     else if (act === 'complete') {
       const notes = ($('#doneNotes')?.value || '').trim();
+      focusJobId = null;   // done with this one; Today moves on to the next house
       await update(j.id, {
         status: 'completed',
         completed_at: new Date().toISOString(),
@@ -993,6 +1387,17 @@ async function jobAction(act, j, btn) {
     }
     else if (act === 'cancel') {
       await update(j.id, { status: 'cancelled' });
+    }
+    else if (act === 'cancelseries') {
+      if (!confirm('Cancel this visit and every later one in this series?')) {
+        btn.disabled = false; btn.textContent = original; return;
+      }
+      // Visits already past are left alone: they are a record of work done.
+      const { error } = await db.from('jobs')
+        .update({ status: 'cancelled' })
+        .eq('recurrence_group_id', j.recurrence_group_id)
+        .gte('scheduled_date', j.scheduled_date);
+      if (error) throw error;
     }
     else if (act === 'delete') {
       const { error } = await db.from('jobs').delete().eq('id', j.id);
@@ -1018,14 +1423,23 @@ async function jobAction(act, j, btn) {
         if (insErr) throw insErr;
       }
     }
+    const said = act === 'signin'  ? 'Signed in. Have a good one.'
+               : act === 'signout' ? 'Signed out — thanks!'
+               : act === 'complete' ? 'That one is done.'
+               : 'Payment saved.';
+
+    // From the big card on Today: repaint in place, stay where she is.
+    if (ctx === 'focus') {
+      await renderToday();
+      return flash($('#focusMsg'), said, 'ok');
+    }
+
     if (act === 'signin' || act === 'signout' || act === 'savepay') {
       selectTab(currentTab);                       // repaint the card behind
       const { data: fresh } = await db.from('jobs')
         .select(JOB_SELECT).eq('id', j.id).maybeSingle();
       if (fresh) openJob(fresh);
-      return flash($('#sheetMsg'),
-        act === 'signin'  ? 'Signed in. Have a good one.' :
-        act === 'signout' ? 'Signed out — thanks!' : 'Payment saved.', 'ok');
+      return flash($('#sheetMsg'), said, 'ok');
     }
     closeSheet();
     selectTab(currentTab);
@@ -1042,6 +1456,10 @@ async function update(id, patch) {
 }
 
 /* ---------------- manager: new job ---------------- */
+
+$('#jRepeat').onchange = e => {
+  $('#jCountField').classList.toggle('hidden', !e.target.value);
+};
 
 function prepareJobForm() {
   $('#jDate').value ||= today();
@@ -1063,17 +1481,35 @@ $('#jobForm').onsubmit = async e => {
   btn.disabled = true; btn.textContent = 'Creating…';
   const price = $('#jPrice').value;
 
-  const { data, error } = await db.from('jobs').insert({
+  // Every visit is created as its own row now rather than worked out later.
+  // It means each one can be moved, re-crewed or cancelled on its own, and a
+  // cleaner's list is just a plain query with no recurrence rules in it.
+  const everyDays = Number($('#jRepeat').value) || 0;
+  const visits = everyDays ? Math.min(52, Math.max(2, Number($('#jCount').value) || 2)) : 1;
+  const groupId = everyDays ? crypto.randomUUID() : null;
+  const ruleText = { 7: 'every week', 14: 'every 2 weeks', 28: 'every 4 weeks' }[everyDays] || null;
+
+  const base = {
     client_id: clientId,
     service_type: $('#jService').value,
-    scheduled_date: $('#jDate').value,
     start_time: $('#jTime').value,
     duration_minutes: Number($('#jDur').value),
     address_override: $('#jAddr').value.trim() || null,
     notes: $('#jNotes').value.trim() || null,
     price_cents: price ? Math.round(Number(price) * 100) : null,
-    created_by: me.id
-  }).select('id').single();
+    created_by: me.id,
+    recurrence_group_id: groupId,
+    recurrence_rule: ruleText
+  };
+
+  const rows = [];
+  for (let i = 0; i < visits; i++) {
+    rows.push(Object.assign({}, base, {
+      scheduled_date: addDays($('#jDate').value, i * everyDays)
+    }));
+  }
+
+  const { data, error } = await db.from('jobs').insert(rows).select('id');
 
   if (error) {
     btn.disabled = false; btn.textContent = 'Create job';
@@ -1082,13 +1518,14 @@ $('#jobForm').onsubmit = async e => {
 
   const picked = $$('#jCleaners input:checked').map(i => i.value);
   if (picked.length) {
-    await db.from('job_assignments')
-      .insert(picked.map(id => ({ job_id: data.id, cleaner_id: id })));
+    const links = [];
+    data.forEach(j => picked.forEach(id => links.push({ job_id: j.id, cleaner_id: id })));
+    await db.from('job_assignments').insert(links);
   }
 
   if (pendingConversion) {
     await db.from('booking_requests')
-      .update({ status: 'scheduled', converted_job_id: data.id })
+      .update({ status: 'scheduled', converted_job_id: data[0].id })
       .eq('id', pendingConversion.requestId);
     pendingConversion = null;
     await loadRequests();
@@ -1096,9 +1533,118 @@ $('#jobForm').onsubmit = async e => {
 
   e.target.reset();
   $('#jDur').value = 120; $('#jTime').value = '09:00'; $('#jDate').value = today();
+  $('#jRepeat').value = ''; $('#jCount').value = 13;
+  $('#jCountField').classList.add('hidden');
   btn.disabled = false; btn.textContent = 'Create job';
-  flash($('#globalMsg'), 'Job created.', 'ok');
-  selectTab('week');
+  flash($('#globalMsg'), visits > 1
+    ? `${visits} visits created, ${ruleText}.`
+    : 'Job created.', 'ok');
+  selectTab('all');
+};
+
+/* ---------------- manager: the week's hours and money ----------------
+   Everything here is worked out from what the cleaners actually recorded:
+   hours from the sign-in and sign-out stamps, money from what was entered at
+   the door. Nothing is typed twice. */
+
+let weekStart = null;
+
+function mondayOf(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const back = (new Date(y, m - 1, d).getDay() + 6) % 7;   // Monday = 0
+  return addDays(iso, -back);
+}
+
+const dayLabel = iso => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-IE', { day: 'numeric', month: 'short' });
+};
+
+async function renderSummary() {
+  weekStart = weekStart || mondayOf(today());
+  const end = addDays(weekStart, 6);
+  $('#wkLabel').textContent = `${dayLabel(weekStart)} – ${dayLabel(end)}`;
+
+  const box = $('#summaryBody');
+  box.innerHTML = '<div class="empty"><p>Loading…</p></div>';
+
+  const jobs = (await fetchJobs(weekStart, end)).filter(j => j.status !== 'cancelled');
+
+  if (!jobs.length) {
+    box.innerHTML = `<div class="empty"><div class="big">📅</div>
+      <p>Nothing booked this week.</p></div>`;
+    return;
+  }
+
+  const minutesBy = {};
+  let cash = 0, transfer = 0, owedCents = 0;
+  const owed = [];
+
+  jobs.forEach(j => {
+    (j.job_assignments || []).forEach(a => {
+      if (!a.checked_in_at || !a.checked_out_at) return;
+      const mins = Math.max(0, Math.round(
+        (new Date(a.checked_out_at) - new Date(a.checked_in_at)) / 60000));
+      const who = a.profiles?.full_name || 'Unknown';
+      minutesBy[who] = (minutesBy[who] || 0) + mins;
+    });
+
+    if (j.payment_method === 'cash')          cash     += j.payment_amount_cents || 0;
+    else if (j.payment_method === 'transfer') transfer += j.payment_amount_cents || 0;
+    else { owed.push(j); owedCents += j.price_cents || 0; }
+  });
+
+  const totalMins = Object.values(minutesBy).reduce((a, b) => a + b, 0);
+  const done = jobs.filter(j => j.status === 'completed').length;
+
+  box.innerHTML = `
+    <div class="bigstat">
+      <div><div class="n">${jobs.length}</div><div class="l">jobs</div></div>
+      <div><div class="n">${esc(prettyDur(totalMins) || '0m')}</div><div class="l">worked</div></div>
+      <div><div class="n">€${euros(cash + transfer)}</div><div class="l">taken</div></div>
+    </div>
+
+    <div class="card">
+      <div class="stat"><span class="k">Cash</span><span class="v">€${euros(cash)}</span></div>
+      <div class="stat"><span class="k">Transfer</span><span class="v">€${euros(transfer)}</span></div>
+      <div class="stat"><span class="k">Still to collect</span>
+        <span class="v">${owed.length ? '€' + euros(owedCents) : '—'}</span></div>
+      <div class="stat"><span class="k">Finished</span><span class="v">${done} of ${jobs.length}</span></div>
+    </div>
+
+    ${Object.keys(minutesBy).length ? `
+      <div class="daylabel">Hours worked</div>
+      <div class="card">
+        ${Object.entries(minutesBy).sort((a, b) => b[1] - a[1]).map(([who, mins]) =>
+          `<div class="stat"><span class="k">${esc(who)}</span>
+             <span class="v">${esc(prettyDur(mins))}</span></div>`).join('')}
+      </div>` : `<div class="note">Nobody has signed in and out yet this week, so
+        there are no hours to show.</div>`}
+
+    ${owed.length ? `
+      <div class="daylabel">Not paid yet</div>
+      ${owed.map(j => `
+        <div class="card">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700">${esc(j.clients?.name || 'Client')}</div>
+              <div style="font-size:.82rem;color:var(--muted)">
+                ${esc(dayLabel(j.scheduled_date))} · ${esc(prettyTime(j.start_time))}</div>
+            </div>
+            <div style="font-weight:700;color:var(--navy)">
+              ${j.price_cents != null ? '€' + euros(j.price_cents) : 'no price set'}</div>
+          </div>
+        </div>`).join('')}` : ''}
+  `;
+}
+
+$('#wkPrev').onclick = () => {
+  weekStart = addDays(weekStart || mondayOf(today()), -7);
+  renderSummary();
+};
+$('#wkNext').onclick = () => {
+  weekStart = addDays(weekStart || mondayOf(today()), 7);
+  renderSummary();
 };
 
 /* ---------------- manager: website reviews ---------------- */
@@ -1293,17 +1839,41 @@ async function loadClients() {
 }
 
 function renderClients() {
+  // The areas already in use, offered as suggestions so they stay spelled the
+  // same way — the day view groups on this text.
+  const known = [...new Set(clients.map(c => (c.area || '').trim()).filter(Boolean))].sort();
+  const list = $('#areaList');
+  if (list) list.innerHTML = known.map(a => `<option value="${esc(a)}">`).join('');
+
   $('#clientList').innerHTML = clients.length
     ? clients.map(c => `<div class="card">
         <div style="font-weight:700">${esc(c.name)}</div>
         <div style="font-size:.86rem;color:var(--muted);margin-top:3px">
-          ${esc(c.address)}${c.eircode ? ' · ' + esc(c.eircode) : ''}
+          ${esc(addrLine(c.address, c.eircode))}
         </div>
         ${c.phone ? `<div style="font-size:.86rem;margin-top:5px">
           <a href="tel:${esc(c.phone.replace(/\s/g, ''))}">${esc(c.phone)}</a></div>` : ''}
         ${c.notes ? `<div style="font-size:.84rem;color:var(--muted);margin-top:7px;line-height:1.45">${esc(c.notes)}</div>` : ''}
+        <div class="btnrow" style="margin-top:10px;align-items:center">
+          <input class="areaEdit" data-id="${c.id}" type="text" list="areaList"
+                 value="${esc(c.area || '')}" placeholder="Area — groups the day into a route"
+                 aria-label="Area for ${esc(c.name)}" style="flex:1">
+          <button class="btn ghost sm areaSave" data-id="${c.id}">Save area</button>
+        </div>
       </div>`).join('')
     : '<div class="empty"><p>No clients yet.</p></div>';
+
+  $$('.areaSave').forEach(b => b.onclick = async () => {
+    const box = $(`.areaEdit[data-id="${b.dataset.id}"]`);
+    b.disabled = true; b.textContent = 'Saving…';
+    const { error } = await db.from('clients')
+      .update({ area: box.value.trim() || null }).eq('id', b.dataset.id);
+    b.disabled = false; b.textContent = 'Save area';
+    if (error) return flash($('#globalMsg'), error.message);
+    await loadClients();
+    renderClients();
+    flash($('#globalMsg'), 'Area saved.', 'ok');
+  });
 }
 
 $('#clientForm').onsubmit = async e => {
@@ -1314,6 +1884,7 @@ $('#clientForm').onsubmit = async e => {
     name: $('#cName').value.trim(),
     address: $('#cAddr').value.trim(),
     eircode: $('#cEir').value.trim() || null,
+    area: $('#cArea').value.trim() || null,
     phone: $('#cPhone').value.trim() || null,
     email: $('#cEmail').value.trim() || null,
     notes: $('#cNotes').value.trim() || null
