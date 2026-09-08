@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D2B6E">
 <title>Silva Cleaning Team — Staff Schedule</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Silva">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -291,6 +298,22 @@ textarea{resize:vertical;min-height:74px}
 .zoomin{animation:zoomin .22s cubic-bezier(.2,.8,.3,1)}
 .fadeup{animation:fadeup .2s ease-out}
 @media (prefers-reduced-motion:reduce){.zoomin,.fadeup{animation:none}}
+
+/* ---------- waiting for signal ---------- */
+.waitbanner{display:flex;align-items:center;gap:12px;padding:13px 15px;margin-bottom:12px;
+  border-radius:var(--radius-sm);background:var(--blue-pale);border:1px solid var(--blue-light)}
+.waitbanner.grey{background:var(--grey-pale);border-color:var(--border)}
+.waitbanner .grow{flex:1;min-width:0}
+.waitbanner strong{color:var(--navy);font-size:.95rem}
+.waitbanner .sub{font-size:.8rem;color:var(--muted);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill.waiting{background:var(--amber);color:#fff}
+.sitestatus.waiting{background:var(--amber-pale);color:var(--amber)}
+.saidtime{color:var(--muted);font-weight:400}
+/* room for the notch when it is installed on the home screen */
+.bar{padding-top:calc(12px + env(safe-area-inset-top,0px))}
+.app{padding-bottom:env(safe-area-inset-bottom,0px)}
+
   </style>
 </head>
 <body>
@@ -359,6 +382,7 @@ textarea{resize:vertical;min-height:74px}
     <button role="tab" data-tab="all"      aria-selected="false" class="mgr hidden">Full schedule</button>
     <button role="tab" data-tab="newjob"   aria-selected="false" class="mgr hidden">New job</button>
     <button role="tab" data-tab="summary"  aria-selected="false" class="mgr hidden">This week</button>
+    <button role="tab" data-tab="money"    aria-selected="false" class="mgr hidden">Money</button>
     <button role="tab" data-tab="requests" aria-selected="false" class="mgr hidden" id="tabRequests">Requests</button>
     <button role="tab" data-tab="reviews"  aria-selected="false" class="mgr hidden" id="tabReviews">Reviews</button>
     <button role="tab" data-tab="clients"  aria-selected="false" class="mgr hidden">Clients</button>
@@ -366,6 +390,7 @@ textarea{resize:vertical;min-height:74px}
   </nav>
 
   <main>
+    <div id="offlineBanner"></div>
     <div id="newBanner"></div>
     <div id="globalMsg"></div>
     <section id="panel-today"   class="panel stack"></section>
@@ -376,7 +401,8 @@ textarea{resize:vertical;min-height:74px}
       <form id="jobForm" class="card">
         <h3 style="font-size:1.15rem;color:var(--navy);margin-bottom:14px">Schedule a job</h3>
         <div class="field"><label for="jClient">Client</label>
-          <select id="jClient" required></select></div>
+          <select id="jClient" required></select>
+          <p class="note" id="jDefaults" style="margin-top:6px"></p></div>
         <div class="field"><label for="jService">Service</label>
           <select id="jService" required>
             <option>Residential cleaning</option>
@@ -448,6 +474,9 @@ textarea{resize:vertical;min-height:74px}
       <div id="reviewList" class="stack"></div>
     </section>
 
+    <!-- Money -->
+    <section id="panel-money" class="panel stack hidden"></section>
+
     <!-- Clients -->
     <section id="panel-clients" class="panel stack hidden">
       <form id="clientForm" class="card">
@@ -465,6 +494,12 @@ textarea{resize:vertical;min-height:74px}
         <div class="field"><label for="cArea">Area</label>
           <input id="cArea" type="text" list="areaList" placeholder="Corrandulla, Salthill, Oranmore…">
           <datalist id="areaList"></datalist></div>
+        <div class="row2">
+          <div class="field"><label for="cPrice">Usual price (€)</label>
+            <input id="cPrice" type="number" min="0" step="1" placeholder="80"></div>
+          <div class="field"><label for="cDur">Usually takes (minutes)</label>
+            <input id="cDur" type="number" min="15" max="720" step="15" placeholder="120"></div>
+        </div>
         <div class="field"><label for="cEmail">Email</label>
           <input id="cEmail" type="email"></div>
         <div class="field"><label for="cNotes">Notes</label>
@@ -531,8 +566,9 @@ const SUPABASE_KEY = 'sb_publishable_wNh5jRVLIczoAeTOBXA97A_0loighH4';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const JOB_SELECT =
-  '*, clients(id,name,phone,email,address,eircode,area,notes),' +
+  '*, clients(id,name,phone,email,address,eircode,area,notes,default_price_cents,default_duration_minutes),' +
   ' job_assignments(cleaner_id, assigned_at, checked_in_at, checked_out_at,' +
+  ' checked_in_reported_at, checked_out_reported_at,' +
   ' profiles(id,full_name,phone))';
 
 let me = null;          // my profile row
@@ -544,6 +580,9 @@ let reviews  = [];      // website reviews awaiting or holding approval
 let newAssignments = []; // jobs put on my plate since I last looked
 let currentTab = 'today';
 let todayJobs = [];      // today's jobs, in time order
+let outbox = [];         // sign-ins and payments waiting for signal
+let refused = [];        // things the server turned down, to tell her about
+let cacheStamp = null;   // set when Today is being shown from the phone's copy
 let todayMode = 'now';   // 'now' = one job filling the screen, 'day' = the whole route
 let focusJobId = null;   // a job she tapped in the day view, so it stays on screen
 
@@ -583,6 +622,18 @@ const myAssignment = j => (j.job_assignments || []).find(a => a.cleaner_id === m
 const clockTime = ts => ts
   ? new Date(ts).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' })
   : '';
+
+/* When a phone had no signal at the door, two times exist: the moment she
+   tapped, and the moment the message reached the database. The first is the
+   truth about the house, the second is the record of when we heard about it.
+   Show the first, and name the second whenever they disagree. */
+const arrivedAt = a => a.checked_in_reported_at  || a.checked_in_at;
+const leftAt    = a => a.checked_out_reported_at || a.checked_out_at;
+const sentLate  = (server, said) => !!(server && said &&
+  Math.abs(new Date(server) - new Date(said)) > 2 * 60000);
+const stampTime = (server, said) => sentLate(server, said)
+  ? `${clockTime(said)} <span class="saidtime">(sent ${clockTime(server)})</span>`
+  : clockTime(said || server);
 
 /* How long someone was actually in the house, from the two stamps. */
 function workedFor(inAt, outAt) {
@@ -767,14 +818,29 @@ function showAuth() {
   $('#appView').classList.add('hidden');
 }
 
-async function start(session) {
-  const { data: profile, error } = await db
-    .from('profiles').select('*').eq('id', session.user.id).single();
+const ME_KEY = 'silva.me.v1';
 
-  if (error || !profile) {
+async function start(session) {
+  loadOutbox();
+
+  let profile = null, error = null;
+  try {
+    const r = await db.from('profiles').select('*').eq('id', session.user.id).single();
+    profile = r.data; error = r.error;
+  } catch (e) { error = e; }
+
+  // Opening the app in a dead spot should still show the day. The session
+  // itself lives on the phone, so only the profile lookup is missing.
+  if (!profile && offlineish(error)) {
+    const saved = readStore(ME_KEY, null);
+    if (saved && saved.id === session.user.id) profile = saved;
+  }
+
+  if (!profile) {
     showAuth();
     return flash($('#authMsg'), 'Your profile could not be loaded. Ask a manager to check your account.');
   }
+  writeStore(ME_KEY, profile);
   if (!profile.is_active) {
     await db.auth.signOut();
     showAuth();
@@ -791,8 +857,18 @@ async function start(session) {
   $$('.mgr').forEach(el => el.classList.toggle('hidden', !isManager));
 
   if (isManager) { await loadTeam(); await loadClients(); await loadRequests(); await loadReviews(); }
-  await loadNewAssignments();
+  await tryLoad('new jobs', loadNewAssignments, null);
+  renderOfflineBanner();
   selectTab('today');
+  flushOutbox({ quiet: true });
+}
+
+/* Keep the last good copy of the app on the phone so it opens at a door with
+   no bars. The worker never serves a stale app when the network is there. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('No offline copy:', err.message));
+  });
 }
 
 /* ---------------- tabs ---------------- */
@@ -810,6 +886,7 @@ function selectTab(tab) {
   if (tab === 'all')     renderJobs('#panel-all',   addDays(today(), -14), addDays(today(), 60));
   if (tab === 'newjob')  prepareJobForm();
   if (tab === 'summary')  renderSummary();
+  if (tab === 'money')    renderMoney();
   if (tab === 'requests') renderRequests();
   if (tab === 'reviews')  renderReviews();
   if (tab === 'clients') renderClients();
@@ -823,13 +900,23 @@ function selectTab(tab) {
    anything assigned after profiles.assignments_seen_at is flagged until they
    acknowledge it. Managers get assigned to jobs too, so this is for everyone. */
 
+/* Every background load is optional. A dead connection must never stop the
+   app opening — a cleaner standing at a door needs the screen, not an error. */
+async function tryLoad(what, fn, fallback) {
+  try { return await fn(); }
+  catch (err) { console.warn(`Could not load ${what}:`, err?.message || err); return fallback; }
+}
+
 async function loadNewAssignments() {
-  const { data, error } = await db.from('job_assignments')
-    .select('job_id, assigned_at')
-    .eq('cleaner_id', me.id)
-    .gt('assigned_at', me.assignments_seen_at);
-  if (error) { console.error(error); newAssignments = []; }
-  else newAssignments = data || [];
+  const rows = await tryLoad('new jobs', async () => {
+    const { data, error } = await db.from('job_assignments')
+      .select('job_id, assigned_at')
+      .eq('cleaner_id', me.id)
+      .gt('assigned_at', me.assignments_seen_at);
+    if (error) throw error;
+    return data || [];
+  }, []);
+  newAssignments = rows;
   renderNewBanner();
 }
 
@@ -875,14 +962,20 @@ async function fetchJobs(from, to) {
     .lte('scheduled_date', to)
     .order('scheduled_date', { ascending: true })
     .order('start_time',    { ascending: true });
-  if (error) { console.error(error); return []; }
+  if (error) throw error;          // the caller decides what to show
   return data || [];
 }
 
 async function renderJobs(sel, from, to) {
   const box = $(sel);
   box.innerHTML = '<div class="empty"><p>Loading…</p></div>';
-  const jobs = await fetchJobs(from, to);
+  let jobs;
+  try { jobs = await fetchJobs(from, to); }
+  catch (err) {
+    box.innerHTML = `<div class="empty"><div class="big">📡</div>
+      <p>${esc(offlineish(err) ? 'No signal, so this list could not load. It will be here when you are back in coverage.' : (err.message || 'That would not load.'))}</p></div>`;
+    return;
+  }
 
   if (!jobs.length) {
     box.innerHTML = `<div class="empty">
@@ -911,6 +1004,187 @@ async function renderJobs(sel, from, to) {
   });
 }
 
+/* ---------------- working with no signal ----------------
+   Half of these houses are down a lane in Corrandulla or Annaghdown where
+   there is no coverage at the door. Nothing a cleaner does should be lost for
+   that: the tap is kept on the phone and sent the moment signal comes back.
+
+   The time matters as much as the fact. The database stamps its own clock, so
+   a sign-in that syncs two hours late would otherwise be recorded two hours
+   late. Alongside it the phone reports the time she actually tapped, and the
+   database will accept that claim if it is not in the future and not more than
+   a day old. Both are kept, and the app shows both whenever they disagree. */
+
+const OUTBOX_KEY  = 'silva.outbox.v1';
+const REFUSED_KEY = 'silva.refused.v1';
+const DAY_KEY     = 'silva.today.v1';
+
+const readStore = (k, fallback) => {
+  try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; }
+};
+const writeStore = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+/* A refusal from Postgres is a permanent no; a dropped connection is a "later". */
+const offlineish = err => !navigator.onLine ||
+  /failed to fetch|networkerror|load failed|network request failed|timeout/i
+    .test(String(err?.message || err || ''));
+
+function loadOutbox() {
+  outbox  = readStore(OUTBOX_KEY, []) || [];
+  refused = readStore(REFUSED_KEY, []) || [];
+}
+
+/* Do it now if we can, keep it if we cannot. Returns true when it was kept. */
+async function doOrQueue(item) {
+  item.id = item.id || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()));
+  item.at = item.at || new Date().toISOString();
+
+  if (!navigator.onLine || outbox.length) {   // keep the order she did things in
+    outbox.push(item); writeStore(OUTBOX_KEY, outbox);
+    if (navigator.onLine) flushOutbox();
+    return true;
+  }
+  try {
+    await sendItem(item);
+    return false;
+  } catch (err) {
+    if (!offlineish(err)) throw err;
+    outbox.push(item); writeStore(OUTBOX_KEY, outbox);
+    return true;
+  }
+}
+
+async function sendItem(it) {
+  // The database refuses a reported time older than a day, so a phone left off
+  // all weekend sends the fact without the claim rather than nothing at all.
+  const fresh = Date.now() - new Date(it.at).getTime() < 23 * 3600 * 1000;
+
+  if (it.kind === 'signin') {
+    const patch = { checked_in_at: it.at };
+    if (fresh) patch.checked_in_reported_at = it.at;
+    const { error } = await db.from('job_assignments').update(patch)
+      .eq('job_id', it.jobId).eq('cleaner_id', me.id);
+    if (error) throw error;
+    if (it.wasScheduled) await update(it.jobId, { status: 'in_progress' });
+    return;
+  }
+  if (it.kind === 'signout') {
+    const patch = { checked_out_at: it.at };
+    if (fresh) patch.checked_out_reported_at = it.at;
+    const { error } = await db.from('job_assignments').update(patch)
+      .eq('job_id', it.jobId).eq('cleaner_id', me.id);
+    if (error) throw error;
+    return;
+  }
+  if (it.kind === 'pay') {
+    const { error } = await db.from('jobs').update(it.body).eq('id', it.jobId);
+    if (error) throw error;
+    return;
+  }
+  if (it.kind === 'complete') {
+    await update(it.jobId, Object.assign({
+      status: 'completed', completed_at: it.at, completed_by: me.id
+    }, it.body));
+    return;
+  }
+  throw new Error('Unknown change: ' + it.kind);
+}
+
+let flushing = false;
+async function flushOutbox(opts = {}) {
+  if (flushing || !me || !outbox.length) return;
+  flushing = true;
+  let sent = 0, hitWall = false;
+  try {
+    while (outbox.length) {
+      const it = outbox[0];
+      try {
+        await sendItem(it);
+        outbox.shift(); sent++;
+      } catch (err) {
+        if (offlineish(err)) { hitWall = true; break; }
+        // The server said no and always will — drop it, but say why.
+        outbox.shift();
+        refused.push({ label: it.label || 'A change', why: err.message || 'was refused',
+                       when: new Date().toISOString() });
+      }
+      writeStore(OUTBOX_KEY, outbox);
+      writeStore(REFUSED_KEY, refused);
+    }
+  } finally {
+    flushing = false;
+    writeStore(OUTBOX_KEY, outbox);
+    writeStore(REFUSED_KEY, refused);
+  }
+  renderOfflineBanner();
+  if (sent && !opts.quiet) selectTab(currentTab);
+  return { sent, hitWall };
+}
+
+/* Anything still in the queue has not reached the database, but as far as the
+   cleaner is concerned it happened — so show it as done. */
+function applyOutbox(jobs) {
+  if (!outbox.length) return jobs;
+  outbox.forEach(it => {
+    const j = jobs.find(x => x.id === it.jobId);
+    if (!j) return;
+    const a = (j.job_assignments || []).find(x => x.cleaner_id === me.id);
+    if (it.kind === 'signin' && a) {
+      a.checked_in_at = a.checked_in_reported_at = it.at; a.waiting = true;
+      if (j.status === 'scheduled') j.status = 'in_progress';
+    }
+    if (it.kind === 'signout' && a) {
+      a.checked_out_at = a.checked_out_reported_at = it.at; a.waiting = true;
+    }
+    if (it.kind === 'pay')      { Object.assign(j, it.body); j.waiting = true; }
+    if (it.kind === 'complete') { j.status = 'completed'; j.waiting = true;
+                                  Object.assign(j, it.body); }
+  });
+  return jobs;
+}
+
+function renderOfflineBanner() {
+  const el = $('#offlineBanner');
+  if (!el) return;
+  const bits = [];
+
+  if (outbox.length) {
+    bits.push(`<div class="waitbanner">
+      <div class="grow">
+        <strong>${outbox.length} ${outbox.length === 1 ? 'thing is' : 'things are'} waiting for signal</strong>
+        <div class="sub">Saved on this phone. ${esc(outbox.map(o => o.label).filter(Boolean).slice(0, 3).join(' · '))}</div>
+      </div>
+      <button class="btn ghost sm" id="tryNow">Try now</button>
+    </div>`);
+  }
+  if (cacheStamp) {
+    bits.push(`<div class="waitbanner grey">
+      <div class="grow"><strong>No signal</strong>
+      <div class="sub">Showing the day as it was saved at ${esc(clockTime(cacheStamp))}.</div></div>
+    </div>`);
+  }
+  if (refused.length) {
+    bits.push(`<div class="latewarn" style="align-items:flex-start">
+      <span>⚠</span>
+      <span class="grow">${refused.map(r => `${esc(r.label)} — ${esc(r.why)}`).join('<br>')}</span>
+      <button class="btn ghost sm" id="clearRefused">OK</button>
+    </div>`);
+  }
+  el.innerHTML = bits.join('');
+  const t = $('#tryNow');
+  if (t) t.onclick = async () => {
+    t.disabled = true; t.textContent = 'Trying…';
+    const r = await flushOutbox();
+    if (r && r.hitWall) { t.disabled = false; t.textContent = 'Try now';
+      flash($('#globalMsg'), 'Still no signal. It is safe on the phone.'); }
+  };
+  const c = $('#clearRefused');
+  if (c) c.onclick = () => { refused = []; writeStore(REFUSED_KEY, refused); renderOfflineBanner(); };
+}
+
+window.addEventListener('online',  () => { renderOfflineBanner(); flushOutbox(); });
+window.addEventListener('offline', () => renderOfflineBanner());
+
 /* ---------------- today: one job at a time ----------------
    A cleaner standing at a door wants one thing on the screen and one button on
    it, so Today shows the house she is in — or the next one — filling the
@@ -921,7 +1195,28 @@ async function renderJobs(sel, from, to) {
 async function renderToday() {
   const box = $('#panel-today');
   box.innerHTML = '<div class="empty"><p>Loading…</p></div>';
-  todayJobs = await fetchJobs(today(), today());
+  try {
+    todayJobs = await fetchJobs(today(), today());
+    cacheStamp = null;
+    // Keep a copy so the app still opens with the day on it at a door with no bars.
+    writeStore(DAY_KEY, { at: new Date().toISOString(), date: today(), jobs: todayJobs });
+  } catch (err) {
+    const saved = readStore(DAY_KEY, null);
+    if (offlineish(err) && saved && saved.date === today()) {
+      todayJobs = saved.jobs || [];
+      cacheStamp = saved.at;
+    } else {
+      cacheStamp = null;
+      box.innerHTML = `<div class="empty"><div class="big">📡</div>
+        <p>${esc(offlineish(err)
+          ? 'No signal, and nothing saved for today yet. Open this once in coverage and it will be here next time.'
+          : (err.message || 'Today would not load.'))}</p></div>`;
+      renderOfflineBanner();
+      return;
+    }
+  }
+  todayJobs = applyOutbox(todayJobs);
+  renderOfflineBanner();
   paintToday();
 }
 
@@ -968,9 +1263,10 @@ function focusView() {
   const out  = !!(mine && mine.checked_out_at);
   const addr = jobAddress(j);
 
+  const waiting = !!(j.waiting || (mine && mine.waiting));
   const state = off  ? 'Cancelled'
-              : done ? 'Finished'
-              : live ? `On site since ${clockTime(mine.checked_in_at)}`
+              : done ? (waiting ? 'Finished · waiting for signal' : 'Finished')
+              : live ? `On site since ${clockTime(arrivedAt(mine))}${waiting ? ' · waiting for signal' : ''}`
               : todayJobs.indexOf(j) === 0 ? 'First today' : 'Up next';
 
   let action = '';
@@ -1094,6 +1390,8 @@ function jobCard(j) {
              return a && a.checked_in_at && !a.checked_out_at
                ? '<span class="pill onsite">on site</span>' : ''; })()}
         ${isLate(j) ? '<span class="pill late">not started</span>' : ''}
+        ${j.waiting || (j.job_assignments || []).some(a => a.waiting)
+            ? '<span class="pill waiting">waiting for signal</span>' : ''}
         ${isNewToMe(j) ? '<span class="pill new">New</span>' : ''}
         <span class="pill ${j.status}">${esc(j.status.replace('_', ' '))}</span>
         <span class="pill svc">${esc(j.service_type)}</span>
@@ -1132,9 +1430,13 @@ function shrink(file, max = 1600, quality = 0.7) {
 async function loadPhotos(j) {
   const box = $('#shots');
   if (!box) return;
-  const { data, error } = await db.from('job_photos')
-    .select('storage_path').eq('job_id', j.id).order('created_at');
-  if (error || !data || !data.length) { box.innerHTML = ''; return; }
+  const data = await tryLoad('photos', async () => {
+    const r = await db.from('job_photos')
+      .select('storage_path').eq('job_id', j.id).order('created_at');
+    if (r.error) throw r.error;
+    return r.data;
+  }, null);
+  if (!data || !data.length) { box.innerHTML = ''; return; }
   // The bucket is private, so each thumbnail needs a short-lived signed link.
   const { data: signed } = await db.storage.from('job-photos')
     .createSignedUrls(data.map(r => r.storage_path), 3600);
@@ -1222,11 +1524,14 @@ function crewRows(j) {
   const rows = list.map(a => {
     const who = esc(a.profiles?.full_name || 'Cleaner');
     if (a.checked_out_at) {
-      return `${who} — ${esc(clockTime(a.checked_in_at))}–${esc(clockTime(a.checked_out_at))}` +
-             ` <span style="color:var(--muted)">(${esc(workedFor(a.checked_in_at, a.checked_out_at))})</span>`;
+      return `${who} — ${stampTime(a.checked_in_at, a.checked_in_reported_at)}` +
+             `–${stampTime(a.checked_out_at, a.checked_out_reported_at)}` +
+             ` <span style="color:var(--muted)">(${esc(workedFor(arrivedAt(a), leftAt(a)))})</span>`;
     }
     if (a.checked_in_at) {
-      return `${who} — <strong style="color:var(--green)">on site since ${esc(clockTime(a.checked_in_at))}</strong>`;
+      return `${who} — <strong style="color:var(--green)">on site since ` +
+             `${stampTime(a.checked_in_at, a.checked_in_reported_at)}</strong>` +
+             (a.waiting ? ' <span class="pill waiting">waiting for signal</span>' : '');
     }
     return `${who} <span style="color:var(--muted)">— not signed in</span>`;
   });
@@ -1242,11 +1547,12 @@ function signInBlock(j) {
     return `<button class="btn primary" data-act="signin">I have arrived — sign in</button>`;
   }
   if (!mine.checked_out_at) {
-    return `<div class="sitestatus">On site since ${esc(clockTime(mine.checked_in_at))}</div>
+    return `<div class="sitestatus${mine.waiting ? ' waiting' : ''}">On site since ${stampTime(mine.checked_in_at, mine.checked_in_reported_at)}${
+             mine.waiting ? ' · waiting for signal' : ''}</div>
             <button class="btn done" data-act="signout">Finished — sign out</button>`;
   }
-  return `<div class="sitestatus finished">Signed in ${esc(clockTime(mine.checked_in_at))}, out ${esc(clockTime(mine.checked_out_at))}
-          · ${esc(workedFor(mine.checked_in_at, mine.checked_out_at))}</div>`;
+  return `<div class="sitestatus finished">Signed in ${stampTime(mine.checked_in_at, mine.checked_in_reported_at)}, out ${stampTime(mine.checked_out_at, mine.checked_out_reported_at)}
+          · ${esc(workedFor(arrivedAt(mine), leftAt(mine)))}</div>`;
 }
 
 function seriesBlock(j) {
@@ -1344,41 +1650,38 @@ async function jobAction(act, j, btn, ctx = 'sheet') {
   btn.textContent = 'Saving…';
 
   try {
+    let kept = false;   // true when it is sitting on the phone waiting for signal
+    const who = j.clients?.name || 'a job';
+
     if (act === 'signin') {
-      if (!myAssignment(j)) throw new Error('You are not on this job.');
-      // The value sent here is ignored; the database stamps the real time.
-      const { error } = await db.from('job_assignments')
-        .update({ checked_in_at: new Date().toISOString() })
-        .eq('job_id', j.id).eq('cleaner_id', me.id);
-      if (error) throw error;
-      if (j.status === 'scheduled') await update(j.id, { status: 'in_progress' });
+      const mine = myAssignment(j);
+      if (!mine) throw new Error('You are not on this job.');
+      if (mine.checked_in_at) throw new Error('You have already signed in for this job.');
+      kept = await doOrQueue({ kind: 'signin', jobId: j.id,
+        wasScheduled: j.status === 'scheduled', label: `Sign in at ${who}` });
     }
     else if (act === 'signout') {
-      const { error } = await db.from('job_assignments')
-        .update({ checked_out_at: new Date().toISOString() })
-        .eq('job_id', j.id).eq('cleaner_id', me.id);
-      if (error) throw error;
+      const mine = myAssignment(j);
+      if (!mine) throw new Error('You are not on this job.');
+      if (!mine.checked_in_at) throw new Error('Sign in before signing out.');
+      if (mine.checked_out_at) throw new Error('You have already signed out of this job.');
+      kept = await doOrQueue({ kind: 'signout', jobId: j.id, label: `Sign out at ${who}` });
     }
     else if (act === 'savepay') {
       const picked = $('#payMethod input:checked');
       const raw = ($('#payAmount')?.value || '').trim();
       if (!picked && !raw) throw new Error('Pick how they paid, or put in an amount.');
       if (raw !== '' && !(Number(raw) >= 0)) throw new Error('That amount does not look right.');
-      const { error } = await db.from('jobs').update({
+      kept = await doOrQueue({ kind: 'pay', jobId: j.id, label: `Payment for ${who}`, body: {
         payment_method: picked ? picked.value : null,
         payment_amount_cents: raw === '' ? null : Math.round(Number(raw) * 100)
-      }).eq('id', j.id);
-      if (error) throw error;
+      } });
     }
     else if (act === 'complete') {
       const notes = ($('#doneNotes')?.value || '').trim();
       focusJobId = null;   // done with this one; Today moves on to the next house
-      await update(j.id, {
-        status: 'completed',
-        completed_at: new Date().toISOString(),
-        completed_by: me.id,
-        completion_notes: notes || null
-      });
+      kept = await doOrQueue({ kind: 'complete', jobId: j.id, label: `${who} finished`,
+        body: { completion_notes: notes || null } });
     }
     else if (act === 'reopen') {
       await update(j.id, {
@@ -1423,10 +1726,12 @@ async function jobAction(act, j, btn, ctx = 'sheet') {
         if (insErr) throw insErr;
       }
     }
-    const said = act === 'signin'  ? 'Signed in. Have a good one.'
-               : act === 'signout' ? 'Signed out — thanks!'
-               : act === 'complete' ? 'That one is done.'
-               : 'Payment saved.';
+    const said = kept
+      ? 'Saved on your phone. It will go up on its own when you have signal.'
+      : act === 'signin'  ? 'Signed in. Have a good one.'
+      : act === 'signout' ? 'Signed out — thanks!'
+      : act === 'complete' ? 'That one is done.'
+      : 'Payment saved.';
 
     // From the big card on Today: repaint in place, stay where she is.
     if (ctx === 'focus') {
@@ -1436,9 +1741,13 @@ async function jobAction(act, j, btn, ctx = 'sheet') {
 
     if (act === 'signin' || act === 'signout' || act === 'savepay') {
       selectTab(currentTab);                       // repaint the card behind
-      const { data: fresh } = await db.from('jobs')
-        .select(JOB_SELECT).eq('id', j.id).maybeSingle();
-      if (fresh) openJob(fresh);
+      if (!kept) {
+        const { data: fresh } = await db.from('jobs')
+          .select(JOB_SELECT).eq('id', j.id).maybeSingle();
+        if (fresh) openJob(fresh);
+      } else {
+        openJob(applyOutbox([j])[0]);
+      }
       return flash($('#sheetMsg'), said, 'ok');
     }
     closeSheet();
@@ -1464,12 +1773,29 @@ $('#jRepeat').onchange = e => {
 function prepareJobForm() {
   $('#jDate').value ||= today();
   $('#jClient').innerHTML = clients.length
-    ? clients.map(c => `<option value="${c.id}">${esc(c.name)} — ${esc(c.address)}</option>`).join('')
+    ? clients.map(c => `<option value="${c.id}">${esc(c.name)}${c.area ? ' — ' + esc(c.area) : ''}</option>`).join('')
     : '<option value="">Add a client first</option>';
+  $('#jClient').onchange = fillFromClient;
+  fillFromClient();
   $('#jCleaners').innerHTML = team.filter(t => t.is_active).length
     ? team.filter(t => t.is_active).map(t =>
         `<label><input type="checkbox" value="${t.id}">${esc(t.full_name || '(no name)')}</label>`).join('')
     : '<p style="font-size:.85rem;color:var(--muted);padding:6px">No staff accounts yet.</p>';
+}
+
+/* Most houses are the same money and the same length every visit, so picking
+   the client fills the rest in. Anything already typed by hand is left alone. */
+function fillFromClient() {
+  const c = clients.find(x => x.id === $('#jClient').value);
+  const hint = $('#jDefaults');
+  if (!c) { if (hint) hint.textContent = ''; return; }
+  if (c.default_duration_minutes) $('#jDur').value = c.default_duration_minutes;
+  if (c.default_price_cents != null) $('#jPrice').value = euros(c.default_price_cents);
+  if (hint) {
+    hint.textContent = (c.default_price_cents != null || c.default_duration_minutes)
+      ? `Filled in from ${c.name}'s usual job. Change either if this visit is different.`
+      : `No usual price or length saved for ${c.name} yet — set one in Clients and it will fill itself in next time.`;
+  }
 }
 
 $('#jobForm').onsubmit = async e => {
@@ -1568,7 +1894,13 @@ async function renderSummary() {
   const box = $('#summaryBody');
   box.innerHTML = '<div class="empty"><p>Loading…</p></div>';
 
-  const jobs = (await fetchJobs(weekStart, end)).filter(j => j.status !== 'cancelled');
+  let jobs;
+  try { jobs = (await fetchJobs(weekStart, end)).filter(j => j.status !== 'cancelled'); }
+  catch (err) {
+    box.innerHTML = `<div class="empty"><div class="big">📡</div>
+      <p>${esc(offlineish(err) ? 'No signal, so the week could not load.' : (err.message || 'That would not load.'))}</p></div>`;
+    return;
+  }
 
   if (!jobs.length) {
     box.innerHTML = `<div class="empty"><div class="big">📅</div>
@@ -1584,7 +1916,7 @@ async function renderSummary() {
     (j.job_assignments || []).forEach(a => {
       if (!a.checked_in_at || !a.checked_out_at) return;
       const mins = Math.max(0, Math.round(
-        (new Date(a.checked_out_at) - new Date(a.checked_in_at)) / 60000));
+        (new Date(leftAt(a)) - new Date(arrivedAt(a))) / 60000));
       const who = a.profiles?.full_name || 'Unknown';
       minutesBy[who] = (minutesBy[who] || 0) + mins;
     });
@@ -1650,10 +1982,12 @@ $('#wkNext').onclick = () => {
 /* ---------------- manager: website reviews ---------------- */
 
 async function loadReviews() {
-  const { data, error } = await db.from('feedback')
-    .select('*').order('created_at', { ascending: false });
-  if (error) console.error(error);
-  reviews = data || [];
+  reviews = await tryLoad('reviews', async () => {
+    const { data, error } = await db.from('feedback')
+      .select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }, []);
   updateReviewBadge();
 }
 
@@ -1731,9 +2065,11 @@ async function reviewAction(act, id, btn) {
 /* ---------------- manager: website booking requests ---------------- */
 
 async function loadRequests() {
-  const { data } = await db.from('booking_requests')
-    .select('*').order('created_at', { ascending: false });
-  requests = data || [];
+  requests = await tryLoad('booking requests', async () => {
+    const { data } = await db.from('booking_requests')
+      .select('*').order('created_at', { ascending: false });
+    return data || [];
+  }, []);
   updateRequestBadge();
 }
 
@@ -1831,11 +2167,112 @@ async function requestAction(act, id, btn) {
 
 let pendingConversion = null;
 
+/* ---------------- manager: money ----------------
+   The week summary answers "how did this week go". This answers the question
+   that actually costs money: who has had their house cleaned and not paid for
+   it. Six months back, oldest first, because the old ones are the ones that
+   get forgotten. */
+
+const MONEY_DAYS = 180;
+
+function owedCents(j) {
+  return j.payment_amount_cents != null ? j.payment_amount_cents : (j.price_cents || 0);
+}
+const isUnpaid = j => j.status === 'completed' &&
+  (!j.payment_method || j.payment_method === 'unpaid');
+
+async function renderMoney() {
+  const box = $('#panel-money');
+  box.innerHTML = '<div class="empty"><p>Loading…</p></div>';
+
+  let jobs;
+  try { jobs = await fetchJobs(addDays(today(), -MONEY_DAYS), today()); }
+  catch (err) {
+    box.innerHTML = `<div class="empty"><div class="big">📡</div><p>${esc(offlineish(err)
+      ? 'No signal, so the money could not load.' : (err.message || 'That would not load.'))}</p></div>`;
+    return;
+  }
+  jobs = jobs.filter(j => j.status !== 'cancelled');
+
+  const unpaid = jobs.filter(isUnpaid)
+    .sort((a, b) => a.scheduled_date < b.scheduled_date ? -1 : 1);
+  const owed = unpaid.reduce((t, j) => t + owedCents(j), 0);
+  const noPrice = unpaid.filter(j => j.price_cents == null && j.payment_amount_cents == null).length;
+
+  const monthStart = today().slice(0, 8) + '01';
+  let cash = 0, transfer = 0;
+  const byClient = {};
+  jobs.forEach(j => {
+    const paid = j.payment_amount_cents || 0;
+    if (j.scheduled_date >= monthStart) {
+      if (j.payment_method === 'cash')     cash     += paid;
+      if (j.payment_method === 'transfer') transfer += paid;
+    }
+    if (j.payment_method === 'cash' || j.payment_method === 'transfer') {
+      const who = j.clients?.name || 'Client';
+      byClient[who] = (byClient[who] || 0) + paid;
+    }
+  });
+  const top = Object.entries(byClient).sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+  const ageDays = d => Math.round((new Date(today()) - new Date(d)) / 86400000);
+
+  box.innerHTML = `
+    <div class="bigstat">
+      <div><div class="n">€${euros(owed)}</div><div class="l">owed to you</div></div>
+      <div><div class="n">${unpaid.length}</div><div class="l">${unpaid.length === 1 ? 'job' : 'jobs'}</div></div>
+      <div><div class="n">€${euros(cash + transfer)}</div><div class="l">in this month</div></div>
+    </div>
+
+    <div class="card">
+      <div class="stat"><span class="k">Cash this month</span><span class="v">€${euros(cash)}</span></div>
+      <div class="stat"><span class="k">Transfer this month</span><span class="v">€${euros(transfer)}</span></div>
+      <div class="stat"><span class="k">Oldest unpaid</span><span class="v">${
+        unpaid.length ? esc(dayLabel(unpaid[0].scheduled_date)) + ' · ' + ageDays(unpaid[0].scheduled_date) + ' days' : '—'}</span></div>
+    </div>
+
+    ${noPrice ? `<div class="note">${noPrice} of these ${noPrice === 1 ? 'has' : 'have'} no
+      price on the job, so ${noPrice === 1 ? 'it counts' : 'they count'} as €0 in the total above.
+      Open ${noPrice === 1 ? 'it' : 'them'} and put the price in.</div>` : ''}
+
+    <div class="daylabel">Not paid for</div>
+    ${unpaid.length ? unpaid.map(j => `
+      <button class="card job" data-id="${j.id}">
+        <span class="time">
+          <span class="hh">${esc(dayLabel(j.scheduled_date))}</span>
+          <span class="dur">${ageDays(j.scheduled_date)}d</span>
+        </span>
+        <span class="body">
+          <span class="client">${esc(j.clients?.name || 'Client')}</span>
+          <span class="addr">${esc(j.clients?.area || '')}${j.clients?.area ? ' · ' : ''}${esc(j.service_type)}</span>
+          <span class="meta">
+            <span class="pill ${j.price_cents == null && j.payment_amount_cents == null ? 'late' : 'scheduled'}">${
+              j.price_cents == null && j.payment_amount_cents == null ? 'no price set' : '€' + euros(owedCents(j))}</span>
+            ${j.payment_method === 'unpaid' ? '<span class="pill svc">marked unpaid</span>' : ''}
+          </span>
+        </span>
+      </button>`).join('')
+      : `<div class="empty"><div class="big">✅</div><p>Everything that is finished has been paid for.</p></div>`}
+
+    ${top.length ? `<div class="daylabel">What each house has paid</div>
+      <div class="card">
+        ${top.map(([who, cents]) => `<div class="stat">
+          <span class="k">${esc(who)}</span><span class="v">€${euros(cents)}</span></div>`).join('')}
+        <div class="stat"><span class="k" style="font-style:italic">last ${MONEY_DAYS} days</span><span class="v"></span></div>
+      </div>` : ''}
+  `;
+
+  $$('.job', box).forEach(el =>
+    el.onclick = () => openJob(jobs.find(j => j.id === el.dataset.id)));
+}
+
 /* ---------------- manager: clients ---------------- */
 
 async function loadClients() {
-  const { data } = await db.from('clients').select('*').order('name');
-  clients = data || [];
+  clients = await tryLoad('clients', async () => {
+    const { data } = await db.from('clients').select('*').order('name');
+    return data || [];
+  }, clients);
 }
 
 function renderClients() {
@@ -1853,26 +2290,47 @@ function renderClients() {
         </div>
         ${c.phone ? `<div style="font-size:.86rem;margin-top:5px">
           <a href="tel:${esc(c.phone.replace(/\s/g, ''))}">${esc(c.phone)}</a></div>` : ''}
+        ${(c.default_price_cents != null || c.default_duration_minutes != null) ? `
+          <div style="margin-top:7px;display:flex;gap:6px;flex-wrap:wrap">
+            ${c.default_price_cents != null ? `<span class="pill scheduled">€${euros(c.default_price_cents)} usual</span>` : ''}
+            ${c.default_duration_minutes != null ? `<span class="pill svc">${esc(prettyDur(c.default_duration_minutes))} usual</span>` : ''}
+          </div>` : ''}
         ${c.notes ? `<div style="font-size:.84rem;color:var(--muted);margin-top:7px;line-height:1.45">${esc(c.notes)}</div>` : ''}
-        <div class="btnrow" style="margin-top:10px;align-items:center">
-          <input class="areaEdit" data-id="${c.id}" type="text" list="areaList"
+        <div style="margin-top:10px;display:grid;gap:8px">
+          <input class="cEditArea" data-id="${c.id}" type="text" list="areaList"
                  value="${esc(c.area || '')}" placeholder="Area — groups the day into a route"
-                 aria-label="Area for ${esc(c.name)}" style="flex:1">
-          <button class="btn ghost sm areaSave" data-id="${c.id}">Save area</button>
+                 aria-label="Area for ${esc(c.name)}">
+          <div class="row2">
+            <input class="cEditPrice" data-id="${c.id}" type="number" min="0" step="1"
+                   value="${c.default_price_cents != null ? euros(c.default_price_cents) : ''}"
+                   placeholder="Usual price €" aria-label="Usual price for ${esc(c.name)}">
+            <input class="cEditDur" data-id="${c.id}" type="number" min="15" max="720" step="15"
+                   value="${c.default_duration_minutes ?? ''}"
+                   placeholder="Usually takes (min)" aria-label="Usual length for ${esc(c.name)}">
+          </div>
+          <button class="btn ghost sm areaSave" data-id="${c.id}" style="justify-self:start">Save</button>
         </div>
       </div>`).join('')
     : '<div class="empty"><p>No clients yet.</p></div>';
 
   $$('.areaSave').forEach(b => b.onclick = async () => {
-    const box = $(`.areaEdit[data-id="${b.dataset.id}"]`);
+    const id    = b.dataset.id;
+    const area  = $(`.cEditArea[data-id="${id}"]`).value.trim();
+    const price = $(`.cEditPrice[data-id="${id}"]`).value;
+    const dur   = $(`.cEditDur[data-id="${id}"]`).value;
+    if (dur !== '' && (Number(dur) < 15 || Number(dur) > 720))
+      return flash($('#globalMsg'), 'A job should be between 15 minutes and 12 hours.');
     b.disabled = true; b.textContent = 'Saving…';
-    const { error } = await db.from('clients')
-      .update({ area: box.value.trim() || null }).eq('id', b.dataset.id);
-    b.disabled = false; b.textContent = 'Save area';
+    const { error } = await db.from('clients').update({
+      area: area || null,
+      default_price_cents: price === '' ? null : Math.round(Number(price) * 100),
+      default_duration_minutes: dur === '' ? null : Number(dur)
+    }).eq('id', id);
+    b.disabled = false; b.textContent = 'Save';
     if (error) return flash($('#globalMsg'), error.message);
     await loadClients();
     renderClients();
-    flash($('#globalMsg'), 'Area saved.', 'ok');
+    flash($('#globalMsg'), 'Saved.', 'ok');
   });
 }
 
@@ -1885,6 +2343,8 @@ $('#clientForm').onsubmit = async e => {
     address: $('#cAddr').value.trim(),
     eircode: $('#cEir').value.trim() || null,
     area: $('#cArea').value.trim() || null,
+    default_price_cents: $('#cPrice').value === '' ? null : Math.round(Number($('#cPrice').value) * 100),
+    default_duration_minutes: $('#cDur').value === '' ? null : Number($('#cDur').value),
     phone: $('#cPhone').value.trim() || null,
     email: $('#cEmail').value.trim() || null,
     notes: $('#cNotes').value.trim() || null
@@ -1900,8 +2360,10 @@ $('#clientForm').onsubmit = async e => {
 /* ---------------- manager: team ---------------- */
 
 async function loadTeam() {
-  const { data } = await db.from('profiles').select('*').order('full_name');
-  team = data || [];
+  team = await tryLoad('the team', async () => {
+    const { data } = await db.from('profiles').select('*').order('full_name');
+    return data || [];
+  }, team);
 }
 
 function renderTeam() {
