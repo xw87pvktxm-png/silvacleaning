@@ -6,7 +6,7 @@
 <title>Silva Cleaning Team — Professional Cleaning Services</title>
 <meta name="description" content="Professional residential, commercial, window, and deep cleaning services. Trusted, thorough, and reliable. Get a free quote today — 087 199 5233."/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>"/>
-<link rel="canonical" href="https://xw87pvktxm-png.github.io/silvacleaning/"/>
+<link rel="canonical" href="https://silvacleaning.ie/"/>
 <meta name="theme-color" content="#0D2B6E"/>
 
 <!-- How the page looks when someone shares the link on WhatsApp, Facebook or iMessage. -->
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Silva Cleaning Team"/>
 <meta property="og:title" content="Silva Cleaning Team — Professional Cleaning Services"/>
 <meta property="og:description" content="Residential, commercial, window and deep cleaning. Trusted, thorough and reliable. Free quote — 087 199 5233."/>
-<meta property="og:url" content="https://xw87pvktxm-png.github.io/silvacleaning/"/>
+<meta property="og:url" content="https://silvacleaning.ie/"/>
 <meta property="og:locale" content="en_IE"/>
+<meta name="geo.region" content="IE-G"/>
+<meta name="geo.placename" content="Galway"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Silva Cleaning Team — Professional Cleaning Services"/>
 <meta name="twitter:description" content="Residential, commercial, window and deep cleaning. Free quote — 087 199 5233."/>
@@ -31,16 +33,23 @@
   "@context": "https://schema.org",
   "@type": "HomeAndConstructionBusiness",
   "name": "Silva Cleaning Team",
-  "description": "Professional residential, commercial, window and deep cleaning services in Leinster, Ireland.",
-  "url": "https://xw87pvktxm-png.github.io/silvacleaning/",
+  "description": "Professional residential, commercial, window and deep cleaning services in Galway city and County Galway, Ireland.",
+  "url": "https://silvacleaning.ie/",
   "telephone": "+353871995233",
   "priceRange": "€€",
   "areaServed": [
-    { "@type": "AdministrativeArea", "name": "Dublin" },
-    { "@type": "AdministrativeArea", "name": "Wicklow" },
-    { "@type": "AdministrativeArea", "name": "Kildare" }
+    { "@type": "AdministrativeArea", "name": "County Galway" },
+    { "@type": "City", "name": "Galway" },
+    { "@type": "City", "name": "Oranmore" },
+    { "@type": "City", "name": "Claregalway" },
+    { "@type": "City", "name": "Salthill" },
+    { "@type": "City", "name": "Corrandulla" },
+    { "@type": "City", "name": "Athenry" },
+    { "@type": "City", "name": "Kinvara" },
+    { "@type": "City", "name": "Clarinbridge" },
+    { "@type": "City", "name": "Loughrea" }
   ],
-  "address": { "@type": "PostalAddress", "addressCountry": "IE" },
+  "address": { "@type": "PostalAddress", "addressRegion": "County Galway", "addressCountry": "IE" },
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
     "name": "Cleaning services",
@@ -229,6 +238,7 @@ section{padding:4.5rem 1.5rem;}
 
 /* ── TESTIMONIALS ── */
 .testimonials-section{background:var(--bg);}
+[hidden]{display:none!important;}
 .reviews-grid{display:grid;grid-template-columns:1fr;gap:1rem;}
 .review-card{background:white;border-radius:var(--radius);padding:1.5rem;border:1px solid var(--border);box-shadow:var(--shadow);transition:transform 0.25s;}
 .review-card:hover{transform:translateY(-3px);}
@@ -592,47 +602,19 @@ body{padding-bottom:70px;}
   </div>
 </section>
 
-<!-- ── TESTIMONIALS ── -->
-<section class="testimonials-section">
+<!-- ── TESTIMONIALS ──
+     Nothing is hard-coded here. The section stays hidden until real reviews,
+     approved in the Reviews tab of the staff app, are loaded from the database.
+     It used to hold three invented customers from Leinster; they were removed
+     on 9 September 2026 because publishing made-up reviews on a real business
+     is dishonest, and their counties were working against the business in
+     Galway search. -->
+<section class="testimonials-section" id="testimonials" hidden>
   <div class="container">
     <span class="section-label reveal">Happy customers</span>
     <h2 class="section-title reveal">What Our Clients Say</h2>
-    <p class="section-sub reveal">We take pride in every clean. Here's what some of our clients have to say.</p>
-    <div class="reviews-grid" id="reviewsGrid">
-      <div class="review-card reveal delay-1">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">Silva Cleaning Team have been doing my house fortnightly for six months now. I come home to an absolutely spotless house every time — they never miss a thing. Couldn't recommend them more highly.</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">S</div>
-          <div>
-            <div class="reviewer-name">Sarah M.</div>
-            <div class="reviewer-type">Regular residential client · Dublin</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal delay-2">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">Used them for a post-construction clean after our extension was built. The house was covered in dust and debris — they made it absolutely perfect. Professional, fast, and great value. 10/10.</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">J</div>
-          <div>
-            <div class="reviewer-name">James O.</div>
-            <div class="reviewer-type">Post-construction clean · Wicklow</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal delay-3">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">We hired Silva for our office and the difference is incredible. The team is always punctual, thorough, and respectful of our workspace. Our staff actually noticed and commented on how clean it was!</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">E</div>
-          <div>
-            <div class="reviewer-name">Emma R.</div>
-            <div class="reviewer-type">Commercial client · Kildare</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <p class="section-sub reveal">We take pride in every clean. Here's what our clients have to say.</p>
+    <div class="reviews-grid" id="reviewsGrid"></div>
   </div>
 </section>
 
@@ -1106,10 +1088,13 @@ document.querySelectorAll('.star-rating input').forEach(function(input) {
       if (!res.ok) return;
       var rows = await res.json();
       rows = (rows || []).filter(function (r) { return String(r.comment || "").trim(); });
-      if (!rows.length) return;
+      if (!rows.length) return;              // no approved reviews: stay hidden
       grid.innerHTML = rows.map(reviewCard).join("");
+      var section = document.getElementById("testimonials");
+      if (section) section.hidden = false;   // only now is there anything to show
     } catch (err) {
-      // A failed lookup just leaves the existing cards in place.
+      // A failed lookup leaves the section hidden rather than showing an
+      // empty heading with nothing under it.
       console.error("reviews load failed", err);
     }
   }
